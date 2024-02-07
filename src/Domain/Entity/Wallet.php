@@ -7,7 +7,7 @@ use DateTime;
 class Wallet
 {
     /**
-     * @var User
+     * @var Customer
      */
     private $user;
 
@@ -31,12 +31,12 @@ class Wallet
         $this->createdAt = new DateTime();
     }
 
-    public function getUser(): User
+    public function getUser(): Customer
     {
         return $this->user;
     }
 
-    public function setUser(User $user): void
+    public function setUser(Customer $user): void
     {
         $this->user = $user;
     }

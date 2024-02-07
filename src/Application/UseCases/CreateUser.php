@@ -2,19 +2,19 @@
 
 namespace App\Application\UseCases;
 
-use App\Domain\Repository\UserRepository;
-use App\Infra\Repository\Doctrine\UserEntity;
+use App\Domain\Repository\CustomerRepository;
+use App\Infra\Repository\Doctrine\CustomerEntity;
 
 class CreateUser
 {
     private $userRepository;
 
-    public function __construct(UserRepository $userRepository)
+    public function __construct(CustomerRepository $userRepository)
     {
         $this->userRepository = $userRepository;
     }
 
-    public function createUser(UserEntity $user): void
+    public function createUser(CustomerEntity $user): void
     {
         $this->userRepository->save($user);
     }

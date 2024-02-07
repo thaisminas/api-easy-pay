@@ -19,8 +19,9 @@ class WalletEntity
     private $id;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Infra\Repository\Doctrine\UserEntity", inversedBy="wallet")
+     * @ORM\OneToOne(targetEntity="CustomerEntity", inversedBy="wallet")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
+     * @ORM\Column(type="integer")
      */
     private $user;
 
@@ -49,12 +50,12 @@ class WalletEntity
         return $this->id;
     }
 
-    public function getUser(): UserEntity
+    public function getUser(): CustomerEntity
     {
         return $this->user;
     }
 
-    public function setUser(UserEntity $user): void
+    public function setUser(CustomerEntity $user): void
     {
         $this->user = $user;
     }

@@ -7,12 +7,12 @@ use DateTime;
 class Transaction
 {
     /**
-     * @var User
+     * @var Customer
      */
     private $payee;
 
     /**
-     * @var User
+     * @var Customer
      */
     private $payeer;
 
@@ -31,22 +31,22 @@ class Transaction
      */
     private $createdAt;
 
-    public function getPayee(): User
+    public function getPayee(): Customer
     {
         return $this->payee;
     }
 
-    public function setPayee(User $payee): void
+    public function setPayee(Customer $payee): void
     {
         $this->payee = $payee;
     }
 
-    public function getPayeer(): User
+    public function getPayeer(): Customer
     {
         return $this->payeer;
     }
 
-    public function setPayeer(User $payeer): void
+    public function setPayeer(Customer $payeer): void
     {
         $this->payeer = $payeer;
     }

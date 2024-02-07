@@ -3,7 +3,7 @@
 namespace App\Application\Controller;
 
 use App\Application\UseCases\CreateUser;
-use App\Infra\Repository\Doctrine\UserEntity;
+use App\Infra\Repository\Doctrine\CustomerEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,7 +26,7 @@ class UserController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
 
-        $user = new UserEntity();
+        $user = new CustomerEntity();
         $user->setName($data['name']);
         $user->setSsn($data['ssn']);
         $user->setEmail($data['email']);

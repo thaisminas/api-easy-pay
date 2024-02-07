@@ -12,6 +12,7 @@ class HealthyController
      */
     public function healthy(): JsonResponse
     {
+
         return new JsonResponse([
             'message' => 'Server running!',
             'status' => 'ok'

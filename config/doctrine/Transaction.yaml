@@ -1,6 +1,5 @@
 App\Domain\Entity\Transaction:
   type: entity
-  repositoryClass: App\Repository\TransactionRepository
   table: transactions
   id:
     id:
@@ -12,18 +11,17 @@ App\Domain\Entity\Transaction:
       type: float
     operationType:
       type: string
+      length: 255
+    createdAt:
+      type: datetime
   manyToOne:
     payee:
-      targetEntity: App\Domain\Entity\UserEntity
-      inversedBy: transactionsAsPayee
+      targetEntity: App\Domain\Entity\User
       joinColumn:
         name: payee_id
         referencedColumnName: id
     payeer:
-      targetEntity: App\Domain\Entity\UserEntity
-      inversedBy: transactionsAsPayeer
+      targetEntity: App\Domain\Entity\User
       joinColumn:
         name: payeer_id
         referencedColumnName: id
-    createdAt:
-      type: datetime

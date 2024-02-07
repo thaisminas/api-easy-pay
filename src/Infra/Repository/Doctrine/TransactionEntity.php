@@ -3,12 +3,11 @@
 namespace App\Infra\Repository\Doctrine;
 
 use Doctrine\ORM\Mapping as ORM;
-use App\Infra\Repository\Doctrine\UserEntity;
 use App\Domain\Entity\Transaction;
 use DateTime;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\TransactionRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\Doctrine\TransactionRepository")
  * @ORM\Table(name="transactions")
  */
 class TransactionEntity
@@ -21,14 +20,16 @@ class TransactionEntity
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Infra\Repository\Doctrine\UserEntity", inversedBy="transactionsAsPayee")
+     * @ORM\ManyToOne(targetEntity="CustomerEntity", inversedBy="transactionsAsPayee")
      * @ORM\JoinColumn(name="payee_id", referencedColumnName="id")
+     * @ORM\Column(type="integer")
      */
     private $payee;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Infra\Repository\Doctrine\UserEntity", inversedBy="transactionsAsPayeer")
+     * @ORM\ManyToOne(targetEntity="CustomerEntity", inversedBy="transactionsAsPayeer")
      * @ORM\JoinColumn(name="payeer_id", referencedColumnName="id")
+     * @ORM\Column(type="integer")
      */
     private $payeer;
 
@@ -57,22 +58,22 @@ class TransactionEntity
         return $this->id;
     }
 
-    public function getPayee(): ?UserEntity
+    public function getPayee(): ?CustomerEntity
     {
         return $this->payee;
     }
 
-    public function setPayee(UserEntity $payee): void
+    public function setPayee(CustomerEntity $payee): void
     {
         $this->payee = $payee;
     }
 
-    public function getPayeer(): ?UserEntity
+    public function getPayeer(): ?CustomerEntity
     {
         return $this->payeer;
     }
 
-    public function setPayeer(UserEntity $payeer): void
+    public function setPayeer(CustomerEntity $payeer): void
     {
         $this->payeer = $payeer;
     }

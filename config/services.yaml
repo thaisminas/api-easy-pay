@@ -8,3 +8,5 @@ services:
 #        factory: ['Doctrine\ORM\Mapping\Driver\YamlDriver', 'create']
 #        arguments:
 #            - '%kernel.project_dir%/config/doctrine'
+#        tags:
+#            - { name: doctrine.orm.mapping_driver, driver: App, alias: App }

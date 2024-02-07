@@ -9,9 +9,9 @@ use DateTime;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
- * @ORM\Table(name="users")
+ * @ORM\Table(name="customers")
  */
-class UserEntity
+class CustomerEntity
 {
     /**
      * @ORM\Id

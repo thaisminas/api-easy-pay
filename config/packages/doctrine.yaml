@@ -1,8 +1,8 @@
 doctrine:
     dbal:
-        driver: pdo_sqlite
-        path: '%kernel.project_dir%/var/data.db3'
+        driver: pdo_mysql
         charset: UTF8
+        url: '%env(resolve:DATABASE_URL)%'
     orm:
         auto_generate_proxy_classes: true
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
@@ -20,14 +20,19 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Infra/Repository/Doctrine'
                 prefix: 'App\Infra\Repository\Doctrine'
                 alias: Transaction
+
 #    orm:
-#        mappings:
-#            App:
-#                is_bundle: false
-#                type: yaml
-#                dir: '%kernel.project_dir%/config/doctrine'
-#                prefix: 'App\Domain\Entity'
-#                alias: App
+#        auto_generate_proxy_classes: true
+#        default_entity_manager: default
+#        entity_managers:
+#            default:
+#                mappings:
+#                    App:
+#                        is_bundle: false
+#                        type: yaml
+#                        dir: '%kernel.project_dir%/config/doctrine'
+#                        prefix: 'App\Domain\Entity'
+#                        alias: App
 
 when@test:
     doctrine:

@@ -2,19 +2,19 @@
 
 namespace App\Infra\Repository;
 
-use App\Domain\Repository\UserRepository;
-use App\Infra\Repository\Doctrine\UserEntity;
+use App\Domain\Repository\CustomerRepository;
+use App\Infra\Repository\Doctrine\CustomerEntity;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-class UserRepositoryDatabase extends ServiceEntityRepository implements UserRepository
+class CustomerRepositoryDatabase extends ServiceEntityRepository implements CustomerRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, UserEntity::class);
+        parent::__construct($registry, CustomerEntity::class);
     }
 
-    public function save(UserEntity $user): void
+    public function save(CustomerEntity $user): void
     {
         $entityManager = $this->getEntityManager();
         $entityManager->persist($user);
