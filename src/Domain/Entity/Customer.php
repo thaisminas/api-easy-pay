@@ -5,7 +5,7 @@ namespace App\Domain\Entity;
 use DateTime;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class User
+class Customer
 {
     /**
      * @var string
