@@ -1,0 +1,29 @@
+App\Domain\Entity\Transaction:
+  type: entity
+  repositoryClass: App\Repository\TransactionRepository
+  table: transactions
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    amount:
+      type: float
+    operationType:
+      type: string
+  manyToOne:
+    payee:
+      targetEntity: App\Domain\Entity\UserEntity
+      inversedBy: transactionsAsPayee
+      joinColumn:
+        name: payee_id
+        referencedColumnName: id
+    payeer:
+      targetEntity: App\Domain\Entity\UserEntity
+      inversedBy: transactionsAsPayeer
+      joinColumn:
+        name: payeer_id
+        referencedColumnName: id
+    createdAt:
+      type: datetime

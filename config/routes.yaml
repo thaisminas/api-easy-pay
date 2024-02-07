@@ -1,3 +1,8 @@
 #index:
 #    path: /
 #    controller: App\Controller\DefaultController::index
+
+healthy:
+  path: '/api/healthy'
+  controller: 'App\Application\Controller\HealthyController::healthy'
+  methods: ['GET']

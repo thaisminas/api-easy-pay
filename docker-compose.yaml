@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  database:
+    image: php:7.2-apache
+    volumes:
+      - ./var/data.db3:/var/www/html/data.db3
+    ports:
+      - 5431:5431
+    # command: php -S 0.0.0.0:5431 -t public
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8070
