@@ -16,146 +16,42 @@ class CustomerMapper
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
      */
-    private $id;
+    public $id;
 
     /**
      * @ORM\Column(type="string", length=150)
      */
-    private $name;
+    public $name;
 
     /**
      * @ORM\Column(type="string", length=150, unique=true)
      */
-    private $ssn;
+    public $ssn;
 
     /**
      * @ORM\Column(type="string", length=150, unique=true)
      */
-    private $email;
+    public $email;
 
     /**
      * @ORM\Column(type="string", length=150)
      */
-    private $password;
+    public $password;
 
     /**
      * @ORM\Column(type="string", length=150)
      */
-    private $role;
+    public $role;
 
     /**
      * @ORM\Column(type="datetime")
      */
-    private $createdAt;
+    public $createdAt;
 
     /**
      * @ORM\Column(type="datetime")
      */
-    private $updatedAt;
-
-    /**
-     * @return mixed
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * @param mixed $name
-     */
-    public function setName($name): void
-    {
-        $this->name = $name;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getSsn()
-    {
-        return $this->ssn;
-    }
-
-    /**
-     * @param mixed $ssn
-     */
-    public function setSsn($ssn): void
-    {
-        $this->ssn = $ssn;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    /**
-     * @param mixed $email
-     */
-    public function setEmail($email): void
-    {
-        $this->email = $email;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getPassword()
-    {
-        return $this->password;
-    }
-
-    /**
-     * @param mixed $password
-     */
-    public function setPassword($password): void
-    {
-        $this->password = $password;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getRole()
-    {
-        return $this->role;
-    }
-
-    /**
-     * @param mixed $role
-     */
-    public function setRole($role): void
-    {
-        $this->role = $role;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getUpdatedAt()
-    {
-        return $this->updatedAt;
-    }
+    public $updatedAt;
 
     public function toDatabase(Customer $customer): CustomerMapper
     {

@@ -8,6 +8,11 @@ use DateTime;
 class Transaction
 {
     /**
+     * @var int
+     */
+    private $id;
+
+    /**
      * @var Customer
      */
     private $payee;
@@ -31,6 +36,16 @@ class Transaction
      * @var DateTime
      */
     private $createdAt;
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
 
     public function getPayee(): Customer
     {

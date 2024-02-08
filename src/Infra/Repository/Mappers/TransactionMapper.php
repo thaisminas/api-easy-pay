@@ -2,6 +2,7 @@
 
 namespace App\Infra\Repository\Mappers;
 
+use App\Domain\Transaction\Transaction;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -62,15 +63,15 @@ class TransactionMapper
         return $this;
     }
 
-//    public function fromDatabaseEntity(Transaction $transactionEntityMapper): Transaction
-//    {
-//        $transaction = new Transaction();
-//        $transaction->setPayee($transactionEntityMapper->payee);
-//        $transaction->setPayeer($transactionEntityMapper->payeer);
-//        $transaction->setAmount($transactionEntityMapper->amount);
-//        $transaction->setOperationType($transactionEntityMapper->operationType);
-//        $transaction->setId($transactionEntityMapper->id);
-//
-//        return $transaction;
-//    }
+    public function fromDatabase(TransactionMapper $transactionMapper): Transaction
+    {
+        $transaction = new Transaction();
+        $transaction->setPayee($transactionMapper->payee);
+        $transaction->setPayeer($transactionMapper->payeer);
+        $transaction->setAmount($transactionMapper->amount);
+        $transaction->setOperationType($transactionMapper->operationType);
+        $transaction->setId($transactionMapper->id);
+
+        return $transaction;
+    }
 }

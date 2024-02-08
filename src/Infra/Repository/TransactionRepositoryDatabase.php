@@ -2,17 +2,19 @@
 
 namespace App\Infra\Repository;
 
+use App\Domain\Customer\Customer;
 use App\Domain\Transaction\Port\Inbound\TransactionRepository;
 use App\Domain\Transaction\Transaction;
 use App\Infra\Repository\Mappers\TransactionMapper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Persistence\ManagerRegistry;
 
 class TransactionRepositoryDatabase extends ServiceEntityRepository implements TransactionRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Transaction::class);
+        parent::__construct($registry, TransactionMapper::class);
     }
 
 
@@ -32,7 +34,7 @@ class TransactionRepositoryDatabase extends ServiceEntityRepository implements T
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select('customer')
-            ->from('App\Infra\Repository\Mappers\Customer', 'customer')
+            ->from('App\Infra\Repository\Mappers\CustomerMapper', 'customer')
             ->where('customer.id = :payeeId OR customer.id = :payeerId')
             ->setParameter('payeeId', $payeeId)
             ->setParameter('payeerId', $payeerId);
@@ -40,13 +42,22 @@ class TransactionRepositoryDatabase extends ServiceEntityRepository implements T
         $query = $qb->getQuery();
         $customers = $query->getResult();
 
-        $customerEntities = [];
+        $entities = [];
 
-        $transactionEntityMapper = new Transaction();
         foreach ($customers as $customer){
-            $customerEntities[] = $transactionEntityMapper->fromDatabaseEntity($customer);
+            $customerEntity = new Customer();
+            $customerEntity->setId($customer->id);
+            $customerEntity->setName($customer->name);
+            $customerEntity->setEmail($customer->email);
+            $customerEntity->setSsn($customer->ssn);
+            $customerEntity->setRole($customer->role);
+            $customerEntity->setPassword($customer->password);
+            $customerEntity->setCreatedAt($customer->createdAt);
+            $customerEntity->setUpdatedAt($customer->updatedAt);
+
+            $entities[$customerEntity->getId()] = $customerEntity;
         }
 
-        return $customerEntities;
+        return $entities;
     }
 }
