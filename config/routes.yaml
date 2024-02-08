@@ -6,3 +6,13 @@ healthy:
   path: '/api/healthy'
   controller: 'App\Application\Controller\HealthyController::healthy'
   methods: ['GET']
+
+customer:
+  path: '/api/customer'
+  controller: 'App\Application\Controller\CustomerController::createCustomer'
+  methods: ['POST']
+
+Transaction:
+  path: '/api/transaction'
+  controller: 'App\Application\Controller\TransactionController::createTransaction'
+  methods: ['POST']

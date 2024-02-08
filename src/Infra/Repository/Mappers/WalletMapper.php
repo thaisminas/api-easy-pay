@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Infra\Repository\Doctrine;
+namespace App\Infra\Repository\Mappers;
 
-use Doctrine\ORM\Mapping as ORM;
 use DateTime;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\WalletRepository")
  * @ORM\Table(name="wallets")
  */
-class WalletEntity
+class WalletMapper
 {
     /**
      * @ORM\Id
@@ -19,7 +19,7 @@ class WalletEntity
     private $id;
 
     /**
-     * @ORM\OneToOne(targetEntity="CustomerEntity", inversedBy="wallet")
+     * @ORM\OneToOne(targetEntity="CustomerEntityMapper", inversedBy="wallet")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
      * @ORM\Column(type="integer")
      */
@@ -50,12 +50,12 @@ class WalletEntity
         return $this->id;
     }
 
-    public function getUser(): CustomerEntity
+    public function getUser(): Customer
     {
         return $this->user;
     }
 
-    public function setUser(CustomerEntity $user): void
+    public function setUser(Customer $user): void
     {
         $this->user = $user;
     }

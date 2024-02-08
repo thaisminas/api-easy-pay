@@ -8,7 +8,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class HealthyController
 {
     /**
-     * @Route("/api/healthy", name="heathy")
+     * @Route("/api/healthy", name="healthy")
      */
     public function healthy(): JsonResponse
     {

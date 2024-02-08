@@ -1,12 +1,17 @@
-services:
-    App\Application\UseCases\CreateUser:
-        arguments:
-            $userRepository: '@App\Infrastructure\Doctrine\UserRepository'
+parameters:
 
-#    doctrine.default_metadata_driver:
-#        class: Doctrine\ORM\Mapping\Driver\YamlDriver
-#        factory: ['Doctrine\ORM\Mapping\Driver\YamlDriver', 'create']
-#        arguments:
-#            - '%kernel.project_dir%/config/doctrine'
-#        tags:
-#            - { name: doctrine.orm.mapping_driver, driver: App, alias: App }
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    App\Application\Controller\:
+        resource: '../src/Application/Controller/'
+        tags: ['controller.service_arguments']

@@ -1,70 +1,52 @@
 <?php
 
-namespace App\Infra\Repository\Doctrine;
+namespace App\Domain\Customer;
 
-use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use DateTime;
+use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
- * @ORM\Table(name="customers")
- */
-class CustomerEntity
+class Customer
 {
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
+     * @var int
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=150)
+     * @var string
      */
     private $name;
 
     /**
-     * @ORM\Column(type="string", length=150, unique=true)
+     * @var string
      */
     private $ssn;
 
     /**
-     * @ORM\Column(type="string", length=150, unique=true)
+     * @var string
      */
     private $email;
 
     /**
-     * @ORM\Column(type="string", length=150)
+     * @var string
      */
     private $password;
 
     /**
-     * @ORM\Column(type="string", length=150)
+     * @var string
      */
     private $role;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @var DateTime
      */
     private $createdAt;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @var DateTime
      */
     private $updatedAt;
 
-    public function __construct()
-    {
-        $this->createdAt = new DateTime();
-        $this->updatedAt = new DateTime();
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
 
     public function getName(): string
     {
@@ -78,12 +60,12 @@ class CustomerEntity
 
     public function getSsn(): string
     {
-        return $this->Ssn;
+        return $this->ssn;
     }
 
-    public function setSsn(string $Ssn): void
+    public function setSsn(string $ssn): void
     {
-        $this->Ssn = $Ssn;
+        $this->ssn = $ssn;
     }
 
     public function getEmail(): string
@@ -121,8 +103,28 @@ class CustomerEntity
         return $this->createdAt;
     }
 
+    public function setCreatedAt(DateTime $createdAt): void
+    {
+        $this->createdAt = $createdAt;
+    }
+
     public function getUpdatedAt(): DateTime
     {
         return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(DateTime $updatedAt): void
+    {
+        $this->updatedAt = $updatedAt;
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): void
+    {
+        $this->id = $id;
     }
 }

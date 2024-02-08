@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Domain\Entity;
+namespace App\Domain\Wallet;
 
+use App\Domain\Customer\Customer;
 use DateTime;
 
 class Wallet
