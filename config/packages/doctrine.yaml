@@ -13,7 +13,7 @@ doctrine:
                 type: annotation
                 dir: '%kernel.project_dir%/src/Infra/Repository/Mappers'
                 prefix: 'App\Infra\Repository\Mappers'
-                alias: User
+                alias: Customer
             Transaction:
                 is_bundle: false
                 type: annotation
@@ -25,7 +25,7 @@ doctrine:
                 type: annotation
                 dir: '%kernel.project_dir%/src/Infra/Repository/Mappers'
                 prefix: 'App\Infra\Repository\Mappers'
-                alias: Transaction
+                alias: Wallet
 
 #    orm:
 #        auto_generate_proxy_classes: true

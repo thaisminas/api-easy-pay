@@ -12,18 +12,18 @@ class CustomerRepositoryDatabase extends ServiceEntityRepository implements Cust
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Customer::class);
+        parent::__construct($registry, CustomerMapper::class);
     }
 
     public function save(Customer $customer): CustomerMapper
     {
         $customerMapper = new CustomerMapper();
-        $customerData = $customerMapper->toDatabase($customer);
+        $customerMapper->toDatabase($customer);
 
         $entityManager = $this->getEntityManager();
-        $entityManager->persist($customerData);
+        $entityManager->persist($customerMapper);
         $entityManager->flush();
 
-        return $customerData;
+        return $customerMapper;
     }
 }
