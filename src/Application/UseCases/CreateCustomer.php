@@ -15,7 +15,7 @@ class CreateCustomer
         $this->customerRepository = $customerRepository;
     }
 
-    public function createCustomer(Array $customer): CustomerMapper
+    public function createCustomer(array $customer): CustomerMapper
     {
         $customerEntity = CustomerFactory::createFromArray($customer);
 
