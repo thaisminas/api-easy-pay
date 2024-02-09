@@ -19,14 +19,14 @@ class CustomerMapper
     public $id;
 
     /**
-     * @ORM\Column(type="string", length=150)
+     * @ORM\Column(type="string", length=100)
      */
     public $name;
 
     /**
      * @ORM\Column(type="string", length=150, unique=true)
      */
-    public $ssn;
+    public $document;
 
     /**
      * @ORM\Column(type="string", length=150, unique=true)
@@ -34,12 +34,7 @@ class CustomerMapper
     public $email;
 
     /**
-     * @ORM\Column(type="string", length=150)
-     */
-    public $password;
-
-    /**
-     * @ORM\Column(type="string", length=150)
+     * @ORM\Column(type="string", length=20)
      */
     public $role;
 
@@ -48,18 +43,17 @@ class CustomerMapper
      */
     public $createdAt;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    public $updatedAt;
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime();
+    }
 
     public function toDatabase(Customer $customer): CustomerMapper
     {
         $this->name = $customer->getName();
-        $this->ssn = $customer->getSsn();
+        $this->document = $customer->getDocument();
         $this->email = $customer->getEmail();
         $this->role = $customer->getRole();
-        $this->password = $customer->getPassword();
 
         return $this;
     }
@@ -70,9 +64,8 @@ class CustomerMapper
         $customer->setId($customerMapper->id);
         $customer->setName($customerMapper->name);
         $customer->setEmail($customerMapper->email);
-        $customer->setSsn($customerMapper->ssn);
+        $customer->setDocument($customerMapper->document);
         $customer->setRole($customerMapper->role);
-        $customer->setPassword($customerMapper->password);
 
         return $customer;
     }

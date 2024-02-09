@@ -20,7 +20,7 @@ class WalletMapper
     public $id;
 
     /**
-     * @ORM\OneToOne(targetEntity="CustomerEntityMapper", inversedBy="wallet")
+     * @ORM\OneToOne(targetEntity="CustomerMapper", inversedBy="wallet")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
      * @ORM\Column(type="integer")
      */
@@ -39,7 +39,7 @@ class WalletMapper
     /**
      * @ORM\Column(type="datetime")
      */
-    private $updatedAt;
+    public $updatedAt;
 
     public function __construct()
     {

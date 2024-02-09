@@ -20,14 +20,14 @@ class TransactionMapper
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="CustomerEntityMapper", inversedBy="transactionsAsPayee")
+     * @ORM\ManyToOne(targetEntity="CustomerMapper", inversedBy="transactionsAsPayee")
      * @ORM\JoinColumn(name="payee_id", referencedColumnName="id")
      * @ORM\Column(type="integer")
      */
     private $payee;
 
     /**
-     * @ORM\ManyToOne(targetEntity="CustomerEntityMapper", inversedBy="transactionsAsPayeer")
+     * @ORM\ManyToOne(targetEntity="CustomerMapper", inversedBy="transactionsAsPayeer")
      * @ORM\JoinColumn(name="payeer_id", referencedColumnName="id")
      * @ORM\Column(type="integer")
      */

@@ -48,11 +48,8 @@ class CustomerRepositoryPortDatabase extends ServiceEntityRepository implements 
             $customerEntity->setId($customer->id);
             $customerEntity->setName($customer->name);
             $customerEntity->setEmail($customer->email);
-            $customerEntity->setSsn($customer->ssn);
+            $customerEntity->setDocument($customer->document);
             $customerEntity->setRole($customer->role);
-            $customerEntity->setPassword($customer->password);
-            $customerEntity->setCreatedAt($customer->createdAt);
-            $customerEntity->setUpdatedAt($customer->updatedAt);
 
             $entities[$customerEntity->getId()] = $customerEntity;
         }

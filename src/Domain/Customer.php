@@ -20,17 +20,12 @@ class Customer
     /**
      * @var string
      */
-    private $ssn;
+    private $document;
 
     /**
      * @var string
      */
     private $email;
-
-    /**
-     * @var string
-     */
-    private $password;
 
     /**
      * @var string
@@ -42,10 +37,10 @@ class Customer
      */
     private $createdAt;
 
-    /**
-     * @var DateTime
-     */
-    private $updatedAt;
+    public function __construct()
+    {
+        $this->createdAt = new DateTime();
+    }
 
 
     public function getName(): string
@@ -58,14 +53,14 @@ class Customer
         $this->name = $name;
     }
 
-    public function getSsn(): string
+    public function getDocument(): string
     {
-        return $this->ssn;
+        return $this->document;
     }
 
-    public function setSsn(string $ssn): void
+    public function setDocument(string $document): void
     {
-        $this->ssn = $ssn;
+        $this->document = $document;
     }
 
     public function getEmail(): string
@@ -76,16 +71,6 @@ class Customer
     public function setEmail(string $email): void
     {
         $this->email = $email;
-    }
-
-    public function getPassword(): string
-    {
-        return $this->password;
-    }
-
-    public function setPassword(string $password): void
-    {
-        $this->password = $password;
     }
 
     public function getRole(): string
@@ -101,21 +86,6 @@ class Customer
     public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
-    }
-
-    public function setCreatedAt(DateTime $createdAt): void
-    {
-        $this->createdAt = $createdAt;
-    }
-
-    public function getUpdatedAt(): DateTime
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(DateTime $updatedAt): void
-    {
-        $this->updatedAt = $updatedAt;
     }
 
     public function getId(): int

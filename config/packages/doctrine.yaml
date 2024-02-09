@@ -26,20 +26,6 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Infra/Repository/Mappers'
                 prefix: 'App\Infra\Repository\Mappers'
                 alias: Wallet
-
-#    orm:
-#        auto_generate_proxy_classes: true
-#        default_entity_manager: default
-#        entity_managers:
-#            default:
-#                mappings:
-#                    App:
-#                        is_bundle: false
-#                        type: yaml
-#                        dir: '%kernel.project_dir%/config/doctrine'
-#                        prefix: 'App\Domain\Entity'
-#                        alias: App
-
 when@test:
     doctrine:
         dbal:

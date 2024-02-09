@@ -13,9 +13,8 @@ class CustomerFactory
 
         $customer->setName($customerData['name']);
         $customer->setEmail($customerData['email'] );
-        $customer->setSsn($customerData['ssn']);
+        $customer->setDocument($customerData['document']);
         $customer->setRole($customerData['role']);
-        $customer->setPassword($customerData['password']);
 
         return $customer;
     }

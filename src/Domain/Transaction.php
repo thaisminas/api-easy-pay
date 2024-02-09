@@ -36,6 +36,11 @@ class Transaction
      */
     private $createdAt;
 
+    public function __construct()
+    {
+        $this->createdAt = new DateTime();
+    }
+
     public function getId(): int
     {
         return $this->id;
@@ -84,11 +89,6 @@ class Transaction
     public function setOperationType(string $operationType): void
     {
         $this->operationType = $operationType;
-    }
-
-    public function setCreatedAt(DateTime $createdAt): void
-    {
-        $this->createdAt = $createdAt;
     }
 
     public function getCreatedAt(): DateTime
