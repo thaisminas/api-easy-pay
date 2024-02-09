@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\Customer;
+namespace App\Domain;
 
 use DateTime;
 use Symfony\Component\Validator\Constraints as Assert;

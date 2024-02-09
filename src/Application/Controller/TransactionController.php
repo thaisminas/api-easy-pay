@@ -2,7 +2,7 @@
 
 namespace App\Application\Controller;
 
-use App\Domain\Transaction\UseCases\CreateTransaction;
+use App\Application\UseCases\CreateTransaction;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,7 +28,7 @@ class TransactionController extends AbstractController
             $transaction = $this->createTransactionUseCase->create($data);
 
             return new JsonResponse([
-                'message' => 'transaction created successfully', 'transaction' => $transaction
+                'message' => 'transaction created successfully', 'transaction' => json_encode($transaction)
             ], Response::HTTP_CREATED);
         } catch (\Error $error){
             throw new $error;

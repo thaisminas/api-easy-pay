@@ -2,12 +2,12 @@
 
 namespace App\Infra\Repository\Mappers;
 
-use App\Domain\Transaction\Transaction;
+use App\Domain\Transaction;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\Doctrine\TransactionRepository")
+ * @ORM\Entity(repositoryClass="App\Infra\Repository\Mappers\TransactionMapper")
  * @ORM\Table(name="transactions")
  */
 class TransactionMapper
@@ -55,8 +55,8 @@ class TransactionMapper
 
     public function toDatabaseEntity(Transaction $transaction): TransactionMapper
     {
-        $this->payee = $transaction->getPayee();
-        $this->payeer = $transaction->getPayeer();
+        $this->payee = $transaction->getPayee()->getId();
+        $this->payeer = $transaction->getPayeer()->getId();
         $this->amount = $transaction->getAmount();
         $this->operationType = $transaction->getOperationType();
 

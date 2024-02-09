@@ -2,20 +2,37 @@
 
 namespace App\Application\Controller;
 
+use App\Application\UseCases\DepositUseCase;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class WalletController extends AbstractController
 {
-    /**
-     * @Route("/wallet", name="app_wallet")
-     */
-    public function index(): JsonResponse
+    private $depositUseCase;
+
+    public function __construct(DepositUseCase $depositUseCase)
     {
-        return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/WalletController.php',
-        ]);
+        $this->depositUseCase = $depositUseCase;
+    }
+
+
+    /**
+     * @Route("/wallet", name="deposit")
+     */
+    public function deposit(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        $customer = $this->depositUseCase->deposit($data);
+
+        $responseData = [
+            'message' => 'Deposit successfully',
+            'customer' => json_encode($customer)
+        ];
+
+        return new JsonResponse($responseData, Response::HTTP_CREATED);
     }
 }

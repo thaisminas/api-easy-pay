@@ -2,11 +2,12 @@
 
 namespace App\Infra\Repository\Mappers;
 
+use App\Domain\Customer;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\WalletRepository")
+ * @ORM\Entity(repositoryClass="App\Infra\Repository\Mappers\WalletMapper")
  * @ORM\Table(name="wallets")
  */
 class WalletMapper
@@ -16,24 +17,24 @@ class WalletMapper
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
      */
-    private $id;
+    public $id;
 
     /**
      * @ORM\OneToOne(targetEntity="CustomerEntityMapper", inversedBy="wallet")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
      * @ORM\Column(type="integer")
      */
-    private $user;
+    public $customer;
 
     /**
      * @ORM\Column(type="float")
      */
-    private $accountBalance;
+    public $accountBalance;
 
     /**
      * @ORM\Column(type="datetime")
      */
-    private $createdAt;
+    public $createdAt;
 
     /**
      * @ORM\Column(type="datetime")
@@ -45,43 +46,12 @@ class WalletMapper
         $this->createdAt = new DateTime();
     }
 
-    public function getId(): ?int
+    public function toDatabase(Customer $customer, ?array $operation): WalletMapper
     {
-        return $this->id;
-    }
+        $this->customer = $customer->getId();
+        $this->accountBalance = $operation['accountBalance'];
+        $this->updatedAt = new DateTime();
 
-    public function getUser(): Customer
-    {
-        return $this->user;
-    }
-
-    public function setUser(Customer $user): void
-    {
-        $this->user = $user;
-    }
-
-    public function getAccountBalance(): float
-    {
-        return $this->accountBalance;
-    }
-
-    public function setAccountBalance(float $accountBalance): void
-    {
-        $this->accountBalance = $accountBalance;
-    }
-
-    public function getCreatedAt(): DateTime
-    {
-        return $this->createdAt;
-    }
-
-    public function setUpdatedAt(DateTime $updatedAt): void
-    {
-        $this->updatedAt = $updatedAt;
-    }
-
-    public function getUpdatedAt(): DateTime
-    {
-        return $this->updatedAt;
+        return $this;
     }
 }

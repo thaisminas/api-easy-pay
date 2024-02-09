@@ -2,11 +2,11 @@
 
 namespace App\Infra\Repository\Mappers;
 
-use App\Domain\Customer\Customer;
+use App\Domain\Customer;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Domain\Customer\Port\Inbound\CustomerRepository")
+ * @ORM\Entity(repositoryClass="App\Infra\Repository\Mappers\CustomerMapper")
  * @ORM\Table(name="customers")
  */
 class CustomerMapper
@@ -64,15 +64,16 @@ class CustomerMapper
         return $this;
     }
 
-//    public function fromDatabaseEntity(Transaction $transactionEntityMapper): Transaction
-//    {
-//        $transaction = new Transaction();
-//        $transaction->setPayee($transactionEntityMapper->payee);
-//        $transaction->setPayeer($transactionEntityMapper->payeer);
-//        $transaction->setAmount($transactionEntityMapper->amount);
-//        $transaction->setOperationType($transactionEntityMapper->operationType);
-//        $transaction->setId($transactionEntityMapper->id);
-//
-//        return $transaction;
-//    }
+    public function fromDatabase(CustomerMapper $customerMapper): Customer
+    {
+        $customer = new Customer();
+        $customer->setId($customerMapper->id);
+        $customer->setName($customerMapper->name);
+        $customer->setEmail($customerMapper->email);
+        $customer->setSsn($customerMapper->ssn);
+        $customer->setRole($customerMapper->role);
+        $customer->setPassword($customerMapper->password);
+
+        return $customer;
+    }
 }

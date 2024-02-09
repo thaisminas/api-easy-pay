@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Domain\Transaction;
+namespace App\Domain;
 
-use App\Domain\Customer\Customer;
 use DateTime;
 
 class Transaction

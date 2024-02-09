@@ -2,30 +2,29 @@
 
 namespace App\Infra\Repository;
 
-use App\Domain\Customer\Customer;
-use App\Domain\Transaction\Port\Inbound\TransactionRepository;
-use App\Domain\Transaction\Transaction;
-use App\Infra\Repository\Mappers\TransactionMapper;
+use App\Domain\Customer;
+use App\Domain\Port\Inbound\CustomerRepositoryPort;
+use App\Infra\Repository\Mappers\CustomerMapper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Persistence\ManagerRegistry;
 
-class TransactionRepositoryDatabase extends ServiceEntityRepository implements TransactionRepository
+class CustomerRepositoryPortDatabase extends ServiceEntityRepository implements CustomerRepositoryPort
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, TransactionMapper::class);
+        parent::__construct($registry, CustomerMapper::class);
     }
 
-
-    public function create(Transaction $transaction): void
+    public function save(Customer $customer): CustomerMapper
     {
-        $transactionEntityMapper = new TransactionMapper();
-        $transactionEntityMapper->toDatabaseEntity($transaction);
+        $customerMapper = new CustomerMapper();
+        $customerMapper->toDatabase($customer);
 
         $entityManager = $this->getEntityManager();
-        $entityManager->persist($transactionEntityMapper);
+        $entityManager->persist($customerMapper);
         $entityManager->flush();
+
+        return $customerMapper;
     }
 
     public function findCustomerByPayeeAndPayeer($payeeId, $payeerId): array
@@ -34,7 +33,7 @@ class TransactionRepositoryDatabase extends ServiceEntityRepository implements T
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select('customer')
-            ->from('App\Infra\Repository\Mappers\CustomerMapper', 'customer')
+            ->from(CustomerMapper::class, 'customer')
             ->where('customer.id = :payeeId OR customer.id = :payeerId')
             ->setParameter('payeeId', $payeeId)
             ->setParameter('payeerId', $payeerId);
@@ -59,5 +58,28 @@ class TransactionRepositoryDatabase extends ServiceEntityRepository implements T
         }
 
         return $entities;
+    }
+
+    public function findById(array $operation): Customer
+    {
+        $customerOperation = $operation['customer'];
+
+        $qb = $this->getEntityManager()->createQueryBuilder();
+
+        $qb->select('customer')
+            ->from(CustomerMapper::class, 'customer')
+            ->where('customer.id = :id')
+            ->setParameter('id', $customerOperation)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        if (!$customerOperation) {
+            throw $this->createNotFoundException('Customer not found');
+        }
+
+        $query = $qb->getQuery()->getSingleResult();
+
+        $customerEntity = new CustomerMapper();
+        return $customerEntity->fromDatabase($query);
     }
 }

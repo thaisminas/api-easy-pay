@@ -16,3 +16,8 @@ Transaction:
   path: '/api/transaction'
   controller: 'App\Application\Controller\TransactionController::createTransaction'
   methods: ['POST']
+
+Wallet:
+  path: '/api/wallet/deposit'
+  controller: 'App\Application\Controller\WalletController::deposit'
+  methods: [ 'POST' ]

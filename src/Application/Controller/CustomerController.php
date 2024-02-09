@@ -2,7 +2,7 @@
 
 namespace App\Application\Controller;
 
-use App\Domain\Customer\UseCases\CreateCustomer;
+use App\Application\UseCases\CreateCustomer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

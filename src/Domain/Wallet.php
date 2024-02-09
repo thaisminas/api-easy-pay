@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Domain\Wallet;
+namespace App\Domain;
 
-use App\Domain\Customer\Customer;
 use DateTime;
 
 class Wallet
@@ -10,7 +9,7 @@ class Wallet
     /**
      * @var Customer
      */
-    private $user;
+    private $customer;
 
     /**
      * @var float
@@ -32,14 +31,14 @@ class Wallet
         $this->createdAt = new DateTime();
     }
 
-    public function getUser(): Customer
+    public function getCustomer(): Customer
     {
-        return $this->user;
+        return $this->customer;
     }
 
-    public function setUser(Customer $user): void
+    public function setCustomer(Customer $customer): void
     {
-        $this->user = $user;
+        $this->customer = $customer;
     }
 
     public function getAccountBalance(): float
