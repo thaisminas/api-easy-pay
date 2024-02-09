@@ -33,22 +33,32 @@ class WalletRepositoryPortDatabase extends ServiceEntityRepository implements Wa
         return $walletMapper;
     }
 
-    public function findAccountBalanceById(array $operation): Wallet
+    public function findAccountBalanceByPayeerId(array $operation): WalletMapper
     {
-        $customerOperation = $operation['customer'];
+        $customerOperation = $operation['payeerId'];
 
         $qb = $this->getEntityManager()->createQueryBuilder();
 
-        $qb->select('walllet')
+        $qb->select('wallet')
             ->from(WalletMapper::class, 'wallet')
-            ->where('wallet.id = :id')
-            ->setParameter('id', $customerOperation)
-            ->getQuery()
-            ->getOneOrNullResult();
+            ->where('wallet.customer = :id')
+            ->setParameter('id', $customerOperation);
 
-        $query = $qb->getQuery()->getSingleResult();
+        return $qb->getQuery()->getSingleResult();
+    }
 
-        return WalletFactory::createFromWalletMapper($query);
+    public function findAccountBalanceByPayeeId(array $operation): WalletMapper
+    {
+        $customerOperation = $operation['payeeId'];
+
+        $qb = $this->getEntityManager()->createQueryBuilder();
+
+        $qb->select('wallet')
+            ->from(WalletMapper::class, 'wallet')
+            ->where('wallet.customer = :id')
+            ->setParameter('id', $customerOperation);
+
+        return $qb->getQuery()->getSingleResult();
     }
 
     public function findCustomerByPayeeAndPayeer(Transaction $transaction): array
@@ -72,12 +82,48 @@ class WalletRepositoryPortDatabase extends ServiceEntityRepository implements Wa
 
             if ($payee->getId() === $customerId || $payeer->getId() === $customerId) {
                 $customerOperation = ($payee->getId() === $customerId) ? $payee : $payeer;
-                $walletCustomers[$customerId] = [
-                    'wallet' => WalletFactory::createFromWalletMapper($wallet, $customerOperation)
-                ];
+                $walletCustomers[$customerId] = WalletFactory::createFromWalletMapper($wallet, $customerOperation);
             }
         }
 
         return $walletCustomers;
     }
+
+    public function updateAccountBalanceByCustomerId(array $customer): void
+    {
+        $customerPayeeId = $customer['payee']['id'];
+        $customerPayeerId = $customer['payeer']['id'];
+        $newBalancePayee = $customer['payee']['amount'];
+        $newBalancePayeer = $customer['payeer']['amount'];
+
+        $connection = $this->getEntityManager()->getConnection();
+
+        $sql = "
+        UPDATE wallets 
+        SET account_balance = 
+            CASE 
+                WHEN customer = :customerPayeeId THEN :newBalancePayee
+                WHEN customer = :customerPayeerId THEN :newBalancePayeer
+            END
+        WHERE (customer = :customerPayeeId OR customer = :customerPayeerId) 
+    ";
+
+        $params = [
+            'customerPayeeId' => $customerPayeeId,
+            'customerPayeerId' => $customerPayeerId,
+            'newBalancePayee' => $newBalancePayee,
+            'newBalancePayeer' => $newBalancePayeer,
+            'customerIds' => [$customerPayeeId, $customerPayeerId]
+        ];
+
+        $types = [
+            'customerPayeeId' => \PDO::PARAM_INT,
+            'customerPayeerId' => \PDO::PARAM_INT,
+            'newBalancePayee' => \PDO::PARAM_INT,
+            'newBalancePayeer' => \PDO::PARAM_INT
+        ];
+
+        $connection->executeQuery($sql, $params, $types);
+    }
+
 }

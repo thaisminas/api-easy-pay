@@ -2,7 +2,10 @@
 
 namespace App\Application\UseCases;
 
+use App\Application\Factory\TransactionFactory;
+use App\Application\Factory\WalletFactory;
 use App\Domain\Customer;
+use App\Domain\Exception\InsufficientBalanceException;
 use App\Domain\Exception\UnauthorizedOperationException;
 use App\Domain\Port\Inbound\CustomerRepositoryPort;
 use App\Domain\Port\Inbound\NotificationClientPort;
@@ -10,6 +13,8 @@ use App\Domain\Port\Inbound\ServiceAuthorizationPort;
 use App\Domain\Port\Inbound\TransactionRepositoryPort;
 use App\Domain\Port\Inbound\WalletRepositoryPort;
 use App\Domain\Transaction;
+use App\Domain\Wallet;
+use App\Infra\Repository\Mappers\WalletMapper;
 
 
 class CreateTransaction
@@ -38,49 +43,67 @@ class CreateTransaction
         $this->walletRepositoryPort = $walletRepositoryPort;
     }
 
-    public function create(Array $data): void
+    public function execute(Array $data): void
     {
         $customers = $this->customerRepository->findCustomerByPayeeAndPayeer($data['payeeId'], $data['payeerId']);
-        $transaction = $this->transaction($customers, $data);
+        $transaction = TransactionFactory::createFromArray($customers, $data);
+        $wallets = $this->walletRepositoryPort->findCustomerByPayeeAndPayeer($transaction);
 
-        $this->validateOperation($transaction, $customers, $data);
+        try {
+            $this->validateTransaction($transaction, $wallets);
 
-        $situation = $this->serviceAuthorizationPort->getAuthorization();
+            $situation = $this->serviceAuthorizationPort->getAuthorization();
 
-        $status = $this->notificationClientPort->postNotification('any data');
+            $status = $this->notificationClientPort->postNotification(json_encode([
+                'message' => 'transfer sent!',
+            ]));
 
-        $this->trasactionRepository->create($transaction);
+            $this->amountToDeductBalance($wallets, $transaction);
+            $this->trasactionRepository->create($transaction);
+
+        } catch (\Error $err){
+            $this->reverseAmountDeductedFromBalance($wallets, $transaction);
+
+            throw new \Exception($err);
+        }
     }
 
-
-    private function transaction(array $customers, array $data): Transaction
-    {
-        $payeeId = $data['payeeId'];
-        $payeerId = $data['payeerId'];
-
-        $transaction = new Transaction();
-        $transaction->setPayee($customers[$payeeId]);
-        $transaction->setPayeer($customers[$payeerId]);
-        $transaction->setAmount($data['amount']);
-        $transaction->setOperationType($data['operationType']);
-
-        return $transaction;
-    }
-
-    private function validateOperation(Transaction $transaction, array $customers, array $operation): void
+    private function validateTransaction(Transaction $transaction, array $wallets): void
     {
         if($transaction->getPayeer()->getRole() === 'PJ'){
             throw new UnauthorizedOperationException('User cannot perform this operation');
         }
 
-
-        foreach ($customers as $customer){
-            $customer;
+        if($transaction->getAmount() > $wallets[$transaction->getPayeer()->getId()]->getAccountBalance()){
+            throw new InsufficientBalanceException('Insufficient balance to carry out the operation');
         }
-
-        $payeeAccountBalance = $this->walletRepositoryPort->findCustomerByPayeeAndPayeer($transaction);
-
-        $payeeAccountBalance;
-
     }
+
+    private function updateBalances(array $wallets, Transaction $transaction, $amountModifier): void
+    {
+        $payeerId = $transaction->getPayeer()->getId();
+        $payeeId = $transaction->getPayee()->getId();
+        $amount = $transaction->getAmount();
+
+        $balancePayeer = $wallets[$payeerId]->getAccountBalance();
+        $balancePayee = $wallets[$payeeId]->getAccountBalance();
+
+        $wallets[$payeerId]->setAccountBalance(round(($balancePayeer + $amountModifier * $amount), 2));
+        $wallets[$payeeId]->setAccountBalance(round(($balancePayee - $amountModifier * $amount), 2));
+
+        $balanceData = balanceDataFormatter($wallets, $transaction);
+
+        $this->walletRepositoryPort->updateAccountBalanceByCustomerId($balanceData);
+    }
+
+    private function amountToDeductBalance(array $wallets, Transaction $transaction)
+    {
+        $this->updateBalances($wallets, $transaction, -1);
+    }
+
+    private function reverseAmountDeductedFromBalance(array $wallets, Transaction $transaction)
+    {
+        $this->updateBalances($wallets, $transaction, 1);
+    }
+
 }

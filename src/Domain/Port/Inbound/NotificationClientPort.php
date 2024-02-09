@@ -2,10 +2,10 @@
 
 namespace App\Domain\Port\Inbound;
 
-use Symfony\Component\HttpFoundation\Response;
+use Psr\Http\Message\ResponseInterface;
 
 interface NotificationClientPort
 {
-    public function postNotification(string $data): Response;
+    public function postNotification(string $data): ResponseInterface;
 
 }

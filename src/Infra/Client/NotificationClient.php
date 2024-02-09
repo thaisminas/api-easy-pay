@@ -5,6 +5,7 @@ namespace App\Infra\Client;
 use App\Domain\Port\Inbound\NotificationClientPort;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 class NotificationClient implements NotificationClientPort
@@ -19,16 +20,15 @@ class NotificationClient implements NotificationClientPort
         $this->httpClient = new Client();
     }
 
-    public function postNotification(string $data): Response
+    public function postNotification(string $data): ResponseInterface
     {
         $endpoint = 'https://run.mocky.io/v3/54dc2cf1-3add-45b5-b5a9-6bf7e7f1f4a6';
 
         try {
-            $response = $this->httpClient->post($endpoint,  [
+            return $this->httpClient->post($endpoint,  [
                 'json' => $data
             ]);
 
-            return json_decode($response->getBody(), true);
         } catch (RequestException $e) {
             throw new \Exception('Error send notification' . $e->getMessage());
         }
