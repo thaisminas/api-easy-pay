@@ -30,7 +30,7 @@ class WalletController extends AbstractController
 
         $responseData = [
             'message' => 'Deposit successfully',
-            'customer' => json_encode($customer)
+            'customer' => $customer
         ];
 
         return new JsonResponse($responseData, Response::HTTP_CREATED);

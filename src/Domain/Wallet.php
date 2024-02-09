@@ -7,6 +7,11 @@ use DateTime;
 class Wallet
 {
     /**
+     * @var int
+     */
+    private $id;
+
+    /**
      * @var Customer
      */
     private $customer;
@@ -29,6 +34,16 @@ class Wallet
     public function __construct()
     {
         $this->createdAt = new DateTime();
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): void
+    {
+        $this->id = $id;
     }
 
     public function getCustomer(): Customer

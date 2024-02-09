@@ -29,7 +29,7 @@ class CustomerController extends AbstractController
 
         $responseData = [
             'message' => 'User created successfully',
-            'customer' => json_encode($customer)
+            'customer' => $customer
         ];
 
         return new JsonResponse($responseData, Response::HTTP_CREATED);

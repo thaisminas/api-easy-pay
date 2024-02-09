@@ -28,7 +28,7 @@ class TransactionController extends AbstractController
             $transaction = $this->createTransactionUseCase->create($data);
 
             return new JsonResponse([
-                'message' => 'transaction created successfully', 'transaction' => json_encode($transaction)
+                'message' => 'transaction created successfully', 'transaction' => $transaction
             ], Response::HTTP_CREATED);
         } catch (\Error $error){
             throw new $error;

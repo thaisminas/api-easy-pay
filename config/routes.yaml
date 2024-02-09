@@ -21,3 +21,8 @@ Wallet:
   path: '/api/wallet/deposit'
   controller: 'App\Application\Controller\WalletController::deposit'
   methods: [ 'POST' ]
+
+api_platform:
+  resource: .
+  type: api_platform
+  prefix: /api

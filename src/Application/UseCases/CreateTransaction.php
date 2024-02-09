@@ -2,10 +2,13 @@
 
 namespace App\Application\UseCases;
 
+use App\Domain\Customer;
+use App\Domain\Exception\UnauthorizedOperationException;
 use App\Domain\Port\Inbound\CustomerRepositoryPort;
 use App\Domain\Port\Inbound\NotificationClientPort;
 use App\Domain\Port\Inbound\ServiceAuthorizationPort;
 use App\Domain\Port\Inbound\TransactionRepositoryPort;
+use App\Domain\Port\Inbound\WalletRepositoryPort;
 use App\Domain\Transaction;
 
 
@@ -18,18 +21,21 @@ class CreateTransaction
     private $serviceAuthorizationPort;
 
     private $notificationClientPort;
+    private $walletRepositoryPort;
 
     public function __construct(
         TransactionRepositoryPort $transactionRepository,
         CustomerRepositoryPort    $customerRepository,
         ServiceAuthorizationPort  $serviceAuthorizationPort,
-        NotificationClientPort    $notificationClientPort
+        NotificationClientPort    $notificationClientPort,
+        WalletRepositoryPort  $walletRepositoryPort
     )
     {
         $this->trasactionRepository = $transactionRepository;
         $this->customerRepository = $customerRepository;
         $this->serviceAuthorizationPort = $serviceAuthorizationPort;
         $this->notificationClientPort = $notificationClientPort;
+        $this->walletRepositoryPort = $walletRepositoryPort;
     }
 
     public function create(Array $data): void
@@ -37,7 +43,7 @@ class CreateTransaction
         $customers = $this->customerRepository->findCustomerByPayeeAndPayeer($data['payeeId'], $data['payeerId']);
         $transaction = $this->transaction($customers, $data);
 
-        $this->validateOperation($transaction);
+        $this->validateOperation($transaction, $customers, $data);
 
         $situation = $this->serviceAuthorizationPort->getAuthorization();
 
@@ -61,13 +67,20 @@ class CreateTransaction
         return $transaction;
     }
 
-    private function validateOperation($transaction): void
+    private function validateOperation(Transaction $transaction, array $customers, array $operation): void
     {
         if($transaction->getPayeer()->getRole() === 'PJ'){
-            throw new \UnauthorizedOperationException('User cannot perform this operation');
+            throw new UnauthorizedOperationException('User cannot perform this operation');
         }
 
-        //Validar se tem saldo
+
+        foreach ($customers as $customer){
+            $customer;
+        }
+
+        $payeeAccountBalance = $this->walletRepositoryPort->findCustomerByPayeeAndPayeer($transaction);
+
+        $payeeAccountBalance;
 
     }
 }
