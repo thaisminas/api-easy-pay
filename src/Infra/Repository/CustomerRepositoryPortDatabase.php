@@ -7,6 +7,7 @@ use App\Domain\Port\Inbound\CustomerRepositoryPort;
 use App\Infra\Repository\Mappers\CustomerMapper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CustomerRepositoryPortDatabase extends ServiceEntityRepository implements CustomerRepositoryPort
 {
@@ -57,21 +58,40 @@ class CustomerRepositoryPortDatabase extends ServiceEntityRepository implements 
         return $entities;
     }
 
-    public function findById(array $operation): Customer
+    public function findById(int $customerId): Customer
     {
-        $customerOperation = $operation['customer'];
-
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select('customer')
             ->from(CustomerMapper::class, 'customer')
             ->where('customer.id = :id')
-            ->setParameter('id', $customerOperation)
+            ->setParameter('id', $customerId)
             ->getQuery()
             ->getOneOrNullResult();
 
-        if (!$customerOperation) {
-            throw $this->createNotFoundException('Customer not found');
+        if (!$customerId) {
+            throw new NotFoundHttpException('Customer not found');
+        }
+
+        $query = $qb->getQuery()->getSingleResult();
+
+        $customerEntity = new CustomerMapper();
+        return $customerEntity->fromDatabase($query);
+    }
+
+    public function findByDocument(string $document): Customer
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+
+        $qb->select('customer')
+            ->from(CustomerMapper::class, 'customer')
+            ->where('customer.document = :id')
+            ->setParameter('id', $document)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        if (!$document) {
+            throw new NotFoundHttpException('Customer not found');
         }
 
         $query = $qb->getQuery()->getSingleResult();

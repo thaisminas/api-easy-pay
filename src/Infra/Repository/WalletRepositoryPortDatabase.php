@@ -6,8 +6,6 @@ use App\Application\Factory\WalletFactory;
 use App\Domain\Customer;
 use App\Domain\Port\Inbound\WalletRepositoryPort;
 use App\Domain\Transaction;
-use App\Domain\Wallet;
-use App\Infra\Repository\Mappers\CustomerMapper;
 use App\Infra\Repository\Mappers\WalletMapper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -33,30 +31,14 @@ class WalletRepositoryPortDatabase extends ServiceEntityRepository implements Wa
         return $walletMapper;
     }
 
-    public function findAccountBalanceByPayeerId(array $operation): WalletMapper
+    public function findAccountBalanceByCustomerId(array $customerId): WalletMapper
     {
-        $customerOperation = $operation['payeerId'];
-
         $qb = $this->getEntityManager()->createQueryBuilder();
 
         $qb->select('wallet')
             ->from(WalletMapper::class, 'wallet')
             ->where('wallet.customer = :id')
-            ->setParameter('id', $customerOperation);
-
-        return $qb->getQuery()->getSingleResult();
-    }
-
-    public function findAccountBalanceByPayeeId(array $operation): WalletMapper
-    {
-        $customerOperation = $operation['payeeId'];
-
-        $qb = $this->getEntityManager()->createQueryBuilder();
-
-        $qb->select('wallet')
-            ->from(WalletMapper::class, 'wallet')
-            ->where('wallet.customer = :id')
-            ->setParameter('id', $customerOperation);
+            ->setParameter('id', $customerId);
 
         return $qb->getQuery()->getSingleResult();
     }
@@ -104,7 +86,8 @@ class WalletRepositoryPortDatabase extends ServiceEntityRepository implements Wa
             CASE 
                 WHEN customer = :customerPayeeId THEN :newBalancePayee
                 WHEN customer = :customerPayeerId THEN :newBalancePayeer
-            END
+            END,
+            updated_at = NOW()
         WHERE (customer = :customerPayeeId OR customer = :customerPayeerId) 
     ";
 

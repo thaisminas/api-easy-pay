@@ -21,17 +21,20 @@ class CustomerController extends AbstractController
     /**
      * @Route("/api/customer", methods={"POST"})
      */
-    public function createCustomer(Request $request): JsonResponse
+    public function createCustomer(Request $request): Response
     {
-        $data = json_decode($request->getContent(), true);
+        try {
+            $data = json_decode($request->getContent(), true);
 
-        $customer = $this->createCustomerUseCase->createCustomer($data);
+            $customer = $this->createCustomerUseCase->execute($data);
 
-        $responseData = [
-            'message' => 'User created successfully',
-            'customer' => $customer
-        ];
+            $responseData = [
+                'customer' => $customer
+            ];
 
-        return new JsonResponse($responseData, Response::HTTP_CREATED);
+            return new JsonResponse($responseData, Response::HTTP_CREATED);
+        } catch (\Error $err){
+            return new Response('Ocorreu um erro interno do servidor.', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }

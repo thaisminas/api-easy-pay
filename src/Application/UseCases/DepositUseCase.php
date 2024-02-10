@@ -16,7 +16,7 @@ class DepositUseCase
         $this->depositRepository = $depositRepository;
         $this->customerRepository = $userRepository;
     }
-    public function deposit(Array $operation): WalletMapper
+    public function execute(Array $operation): WalletMapper
     {
         $customerById = $this->customerRepository->findById($operation);
 

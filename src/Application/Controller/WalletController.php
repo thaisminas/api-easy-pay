@@ -26,7 +26,7 @@ class WalletController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
 
-        $customer = $this->depositUseCase->deposit($data);
+        $customer = $this->depositUseCase->execute($data);
 
         $responseData = [
             'message' => 'Deposit successfully',
