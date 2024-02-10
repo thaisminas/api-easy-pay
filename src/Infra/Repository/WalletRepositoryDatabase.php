@@ -12,17 +12,16 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class WalletRepositoryDatabase extends ServiceEntityRepository implements WalletRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private $walletFactory;
+    public function __construct(ManagerRegistry $registry, WalletFactory $walletFactory)
     {
         parent::__construct($registry, WalletMapper::class);
+        $this->walletFactory = $walletFactory;
     }
 
     public function save(Customer $customer, ?array $operation): WalletMapper
     {
-        $walletMapper = new WalletMapper();
-        $walletMapper->customer = $customer->getId();
-        $walletMapper->accountBalance = $operation['accountBalance'];
-        $walletMapper->updatedAt = new \DateTime();
+        $walletMapper = $this->walletFactory->toDatabase($customer->getId(), $operation);
 
         $entityManager = $this->getEntityManager();
         $entityManager->persist($walletMapper);
@@ -31,29 +30,31 @@ class WalletRepositoryDatabase extends ServiceEntityRepository implements Wallet
         return $walletMapper;
     }
 
-    public function findAccountBalanceByCustomerId(array $customerId): WalletMapper
+    public function findAccountBalanceByCustomerId(int $customerId): WalletMapper
     {
-        $qb = $this->getEntityManager()->createQueryBuilder();
+        $queryBuilder = $this->getEntityManager()->createQueryBuilder();
 
-        $qb->select('wallet')
+        $queryBuilder->select('wallet')
             ->from(WalletMapper::class, 'wallet')
             ->where('wallet.customer = :id')
             ->setParameter('id', $customerId);
 
-        return $qb->getQuery()->getSingleResult();
+        $wallet = $queryBuilder->getQuery()->getSingleResult();
+
+        return $wallet;
     }
 
     public function findCustomerByPayeeAndPayeer(Transaction $transaction): array
     {
-        $qb = $this->getEntityManager()->createQueryBuilder();
+        $queryBuilder = $this->getEntityManager()->createQueryBuilder();
 
-        $qb->select('wallet')
+        $queryBuilder->select('wallet')
             ->from(WalletMapper::class, 'wallet')
             ->where('wallet.customer = :payeeId OR wallet.customer = :payeerId')
             ->setParameter('payeeId', $transaction->getPayee()->getId())
             ->setParameter('payeerId', $transaction->getPayeer()->getId());
 
-        $query = $qb->getQuery()->getResult();
+        $query = $queryBuilder->getQuery()->getResult();
 
         $walletCustomers = [];
 
@@ -64,7 +65,7 @@ class WalletRepositoryDatabase extends ServiceEntityRepository implements Wallet
 
             if ($payee->getId() === $customerId || $payeer->getId() === $customerId) {
                 $customerOperation = ($payee->getId() === $customerId) ? $payee : $payeer;
-                $walletCustomers[$customerId] = WalletFactory::createFromWalletMapper($wallet, $customerOperation);
+                $walletCustomers[$customerId] = $this->walletFactory->fromDatabase($wallet, $customerOperation);
             }
         }
 

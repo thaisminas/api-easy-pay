@@ -4,7 +4,9 @@ namespace App\Application\UseCases;
 
 use App\Application\Factory\TransactionFactory;
 use App\Domain\Exception\InsufficientBalanceException;
+use App\Domain\Exception\NotFoundException;
 use App\Domain\Exception\NotificationException;
+use App\Domain\Exception\OperationTypeException;
 use App\Domain\Exception\ServiceUnauthorizedException;
 use App\Domain\Exception\UnauthorizedOperationException;
 use App\Domain\Interfaces\CustomerRepository;
@@ -18,52 +20,60 @@ use Exception;
 
 class CreateTransaction
 {
-    const COMMON_USER = 'COMMON';
     const STORE_USER = 'STORE';
+    const CREDIT = 'CREDIT';
+    const DEBIT = 'DEBIT';
+    const STATUS_OK = 200;
     private $customerRepository;
 
     private $trasactionRepository;
 
-    private $serviceAuthorizationInterface;
+    private $serviceAuthorization;
 
     private $notificationInterface;
     private $walletRepository;
+    private $transactionFactory;
 
     public function __construct(
         TransactionRepository         $transactionRepository,
         CustomerRepository            $customerRepository,
-        ServiceAuthorizationInterface $serviceAuthorizationInterface,
+        ServiceAuthorizationInterface $serviceAuthorization,
         NotificationInterface         $notificationInterface,
-        WalletRepository              $walletRepository
+        WalletRepository              $walletRepository,
+        TransactionFactory            $transactionFactory
     )
     {
         $this->trasactionRepository = $transactionRepository;
         $this->customerRepository = $customerRepository;
-        $this->serviceAuthorizationInterface = $serviceAuthorizationInterface;
+        $this->serviceAuthorization = $serviceAuthorization;
         $this->notificationInterface = $notificationInterface;
         $this->walletRepository = $walletRepository;
+        $this->transactionFactory = $transactionFactory;
     }
 
     public function execute(Array $data): void
     {
         $customers = $this->customerRepository->findCustomerByPayeeAndPayeer($data['payeeId'], $data['payeerId']);
-        $transaction = TransactionFactory::createFromArray($customers, $data);
+
+        if(count($customers) <= 1){
+            throw new NotFoundException('Customer not found for create transaction');
+        }
+
+        $transaction = $this->transactionFactory->createFromArray($customers, $data);
         $wallets = $this->walletRepository->findCustomerByPayeeAndPayeer($transaction);
 
         try {
             $this->validateTransaction($transaction, $wallets);
 
-            $situation = $this->serviceAuthorizationInterface->getAuthorization();
+            $situation = $this->serviceAuthorization->getAuthorization();
 
-            if($situation->getStatusCode() !== 200){
+            if($situation->getStatusCode() !== self::STATUS_OK){
                 throw new ServiceUnauthorizedException('unauthorized transaction');
             }
 
-            $this->sendNotification();
-
             $this->amountToDeductBalance($wallets, $transaction);
             $this->trasactionRepository->create($transaction);
-
+            $this->sendNotification();
         } catch (\Error $err){
             $this->reverseAmountDeductedFromBalance($wallets, $transaction);
 
@@ -92,18 +102,28 @@ class CreateTransaction
         }
 
         if (!$notificationSent) {
-            throw new NotificationException('Failed to send notification after $maxRetries retries.');
+            throw new NotificationException('Failed to send notification after 3 retries.');
         }
     }
 
     private function validateTransaction(Transaction $transaction, array $wallets): void
     {
+        $operationType = $transaction->getOperationType();
+
         if($transaction->getPayeer()->getRole() === self::STORE_USER){
             throw new UnauthorizedOperationException('User cannot perform this operation');
         }
 
         if($transaction->getAmount() > $wallets[$transaction->getPayeer()->getId()]->getAccountBalance()){
             throw new InsufficientBalanceException('Insufficient balance to carry out the operation');
+        }
+
+        if($operationType !== self::CREDIT && $operationType !== self::DEBIT){
+            throw new OperationTypeException('The operation type is invalid');
+        }
+
+        if($transaction->getAmount() <= 0){
+            throw new OperationTypeException('The amount transaction is invalid');
         }
     }
 
@@ -133,5 +153,4 @@ class CreateTransaction
     {
         $this->updateBalances($wallets, $transaction, 1);
     }
-
 }

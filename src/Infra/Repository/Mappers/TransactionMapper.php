@@ -2,7 +2,6 @@
 
 namespace App\Infra\Repository\Mappers;
 
-use App\Domain\Transaction;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -17,61 +16,39 @@ class TransactionMapper
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
      */
-    private $id;
+    public $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="CustomerMapper", inversedBy="transactionsAsPayee")
      * @ORM\JoinColumn(name="payee_id", referencedColumnName="id")
      * @ORM\Column(type="integer")
      */
-    private $payee;
+    public $payee;
 
     /**
      * @ORM\ManyToOne(targetEntity="CustomerMapper", inversedBy="transactionsAsPayeer")
      * @ORM\JoinColumn(name="payeer_id", referencedColumnName="id")
      * @ORM\Column(type="integer")
      */
-    private $payeer;
+    public $payeer;
 
     /**
      * @ORM\Column(type="float")
      */
-    private $amount;
+    public $amount;
 
     /**
      * @ORM\Column(type="string", length=10)
      */
-    private $operationType;
+    public $operationType;
 
     /**
      * @ORM\Column(type="datetime")
      */
-    private $createdAt;
+    public $createdAt;
 
     public function __construct()
     {
         $this->createdAt = new DateTime();
-    }
-
-    public function toDatabaseEntity(Transaction $transaction): TransactionMapper
-    {
-        $this->payee = $transaction->getPayee()->getId();
-        $this->payeer = $transaction->getPayeer()->getId();
-        $this->amount = $transaction->getAmount();
-        $this->operationType = $transaction->getOperationType();
-
-        return $this;
-    }
-
-    public function fromDatabase(TransactionMapper $transactionMapper): Transaction
-    {
-        $transaction = new Transaction();
-        $transaction->setPayee($transactionMapper->payee);
-        $transaction->setPayeer($transactionMapper->payeer);
-        $transaction->setAmount($transactionMapper->amount);
-        $transaction->setOperationType($transactionMapper->operationType);
-        $transaction->setId($transactionMapper->id);
-
-        return $transaction;
     }
 }

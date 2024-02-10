@@ -2,7 +2,6 @@
 
 namespace App\Infra\Repository\Mappers;
 
-use App\Domain\Customer;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -51,29 +50,5 @@ class CustomerMapper
     public function __construct()
     {
         $this->createdAt = new \DateTime();
-    }
-
-    public function toDatabase(Customer $customer): CustomerMapper
-    {
-        $this->name = $customer->getName();
-        $this->document = $customer->getDocument();
-        $this->email = $customer->getEmail();
-        $this->role = $customer->getRole();
-        $this->password = $customer->getPassword();
-
-        return $this;
-    }
-
-    public function fromDatabase(CustomerMapper $customerMapper): Customer
-    {
-        $customer = new Customer();
-        $customer->setId($customerMapper->id);
-        $customer->setName($customerMapper->name);
-        $customer->setEmail($customerMapper->email);
-        $customer->setDocument($customerMapper->document);
-        $customer->setRole($customerMapper->role);
-        $customer->setPassword($customerMapper->password);
-
-        return $customer;
     }
 }

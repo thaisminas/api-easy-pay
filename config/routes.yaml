@@ -17,10 +17,26 @@ Transaction:
   controller: 'App\Application\Controller\TransactionController::createTransaction'
   methods: ['POST']
 
-Wallet:
+Deposit:
   path: '/api/wallet/deposit'
   controller: 'App\Application\Controller\WalletController::deposit'
   methods: [ 'POST' ]
+
+Balance:
+  path: '/api/wallet/balance/{customerId}'
+  controller: 'App\Application\Controller\WalletController::getBalanceByCustomer'
+  methods: [ 'GET' ]
+  requirements:
+    customerId: '\d+'
+
+
+Extract:
+  path: '/api/transaction/extract/{customerId}'
+  controller: 'App\Application\Controller\TransactionController::getExtractByCustomer'
+  methods: [ 'GET' ]
+  requirements:
+    customerId: '\d+'
+
 
 api_platform:
   resource: .

@@ -3,6 +3,7 @@
 namespace App\Application\Controller;
 
 use App\Application\UseCases\CreateCustomer;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,8 +34,11 @@ class CustomerController extends AbstractController
             ];
 
             return new JsonResponse($responseData, Response::HTTP_CREATED);
-        } catch (\Error $err){
-            return new Response('Ocorreu um erro interno do servidor.', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }  catch (UniqueConstraintViolationException $e) {
+            return new JsonResponse(['error' => 'Violation: Name and email must be unique in the database - ' . $e->getMessage()], Response::HTTP_CONFLICT);
+        } catch (\Exception $e) {
+            $code = $e->getCode() ? $e->getCode() : Response::HTTP_INTERNAL_SERVER_ERROR;
+            return new JsonResponse(['error' => $e->getMessage()], $code);
         }
     }
 }

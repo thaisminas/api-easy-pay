@@ -2,25 +2,28 @@
 
 namespace App\Infra\Repository;
 
+use App\Application\Factory\CustomerFactory;
 use App\Domain\Customer;
+use App\Domain\Exception\NotFoundException;
 use App\Domain\Interfaces\CustomerRepository;
 use App\Infra\Repository\Mappers\CustomerMapper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CustomerRepositoryDatabase extends ServiceEntityRepository implements CustomerRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private $customerMapper;
+    private $customerFactory;
+    public function __construct(ManagerRegistry $registry, CustomerMapper $customerMapper, CustomerFactory $customerFactory)
     {
         parent::__construct($registry, CustomerMapper::class);
+        $this->customerMapper = $customerMapper;
+        $this->customerFactory = $customerFactory;
     }
 
     public function save(Customer $customer): CustomerMapper
     {
-        $customerMapper = new CustomerMapper();
-        $customerMapper->toDatabase($customer);
-
+        $customerMapper = $this->customerFactory->toDatabase($customer);
         $entityManager = $this->getEntityManager();
         $entityManager->persist($customerMapper);
         $entityManager->flush();
@@ -31,23 +34,21 @@ class CustomerRepositoryDatabase extends ServiceEntityRepository implements Cust
     public function findCustomerByPayeeAndPayeer($payeeId, $payeerId): array
     {
 
-        $qb = $this->getEntityManager()->createQueryBuilder();
+        $queryBuilder = $this->getEntityManager()->createQueryBuilder();
 
-        $qb->select('customer')
+        $queryBuilder->select('customer')
             ->from(CustomerMapper::class, 'customer')
             ->where('customer.id = :payeeId OR customer.id = :payeerId')
             ->setParameter('payeeId', $payeeId)
             ->setParameter('payeerId', $payeerId);
 
-        $query = $qb->getQuery();
+        $query = $queryBuilder->getQuery();
         $customers = $query->getResult();
 
         $entities = [];
 
-        $customerMapper = new CustomerMapper();
-
         foreach ($customers as $customer){
-            $customer = $customerMapper->fromDatabase($customer);
+            $customer = $this->customerFactory->fromDatabase($customer);
             $entities[$customer->getId()] = $customer;
         }
         return $entities;
@@ -55,9 +56,9 @@ class CustomerRepositoryDatabase extends ServiceEntityRepository implements Cust
 
     public function findById(int $customerId): Customer
     {
-        $qb = $this->getEntityManager()->createQueryBuilder();
+        $queryBuilder = $this->getEntityManager()->createQueryBuilder();
 
-        $qb->select('customer')
+        $queryBuilder->select('customer')
             ->from(CustomerMapper::class, 'customer')
             ->where('customer.id = :id')
             ->setParameter('id', $customerId)
@@ -65,33 +66,11 @@ class CustomerRepositoryDatabase extends ServiceEntityRepository implements Cust
             ->getOneOrNullResult();
 
         if (!$customerId) {
-            throw new NotFoundHttpException('Customer not found');
+            throw new NotFoundException('Customer not found');
         }
 
-        $query = $qb->getQuery()->getSingleResult();
+        $query = $queryBuilder->getQuery()->getSingleResult();
 
-        $customerEntity = new CustomerMapper();
-        return $customerEntity->fromDatabase($query);
-    }
-
-    public function findByDocument(string $document): Customer
-    {
-        $qb = $this->getEntityManager()->createQueryBuilder();
-
-        $qb->select('customer')
-            ->from(CustomerMapper::class, 'customer')
-            ->where('customer.document = :id')
-            ->setParameter('id', $document)
-            ->getQuery()
-            ->getOneOrNullResult();
-
-        if (!$document) {
-            throw new NotFoundHttpException('Customer not found');
-        }
-
-        $query = $qb->getQuery()->getSingleResult() ?? null;
-
-        $customerEntity = new CustomerMapper();
-        return $customerEntity->fromDatabase($query);
+        return $this->customerFactory->fromDatabase($query);
     }
 }

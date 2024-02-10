@@ -2,7 +2,6 @@
 
 namespace App\Infra\Repository\Mappers;
 
-use App\Domain\Customer;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -44,14 +43,5 @@ class WalletMapper
     public function __construct()
     {
         $this->createdAt = new DateTime();
-    }
-
-    public function toDatabase(Customer $customer, ?array $operation): WalletMapper
-    {
-        $this->customer = $customer->getId();
-        $this->accountBalance = $operation['accountBalance'];
-        $this->updatedAt = new DateTime();
-
-        return $this;
     }
 }

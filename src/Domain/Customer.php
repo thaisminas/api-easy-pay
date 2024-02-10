@@ -97,11 +97,6 @@ class Customer
         $this->role = $role;
     }
 
-    public function getCreatedAt(): DateTime
-    {
-        return $this->createdAt;
-    }
-
     public function getId(): int
     {
         return $this->id;

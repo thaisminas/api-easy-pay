@@ -21,7 +21,7 @@ class NotificationClient implements NotificationInterface
 
     public function postNotification(string $data): ResponseInterface
     {
-        $endpoint = $_ENV['URL_NOTIFICATION_CLIENT'];
+        $endpoint = 'https://run.mocky.io/v3/54dc2cf1-3add-45b5-b5a9-6bf7e7f1f4a6';
 
         try {
             return $this->httpClient->post($endpoint,  [

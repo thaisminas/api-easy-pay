@@ -2,6 +2,7 @@
 
 namespace App\Infra\Repository;
 
+use App\Application\Factory\TransactionFactory;
 use App\Domain\Interfaces\TransactionRepository;
 use App\Domain\Transaction;
 use App\Infra\Repository\Mappers\TransactionMapper;
@@ -10,19 +11,38 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class TransactionRepositoryDatabase extends ServiceEntityRepository implements TransactionRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private $transactionFactory;
+    public function __construct(ManagerRegistry $registry, TransactionFactory $transactionFactory)
     {
         parent::__construct($registry, TransactionMapper::class);
+        $this->transactionFactory = $transactionFactory;
     }
-
 
     public function create(Transaction $transaction): void
     {
-        $transactionEntityMapper = new TransactionMapper();
-        $transactionEntityMapper->toDatabaseEntity($transaction);
+        try {
+            $transactionEntityMapper = $this->transactionFactory->toDatabaseEntity($transaction);
 
-        $entityManager = $this->getEntityManager();
-        $entityManager->persist($transactionEntityMapper);
-        $entityManager->flush();
+            $entityManager = $this->getEntityManager();
+            $entityManager->persist($transactionEntityMapper);
+            $entityManager->flush();
+        } catch (\Exception $e) {
+            throw new \RuntimeException('Error try saving transaction to database', 500, $e);
+        }
+
+    }
+
+    public function findExtractByCustomer(int $customerId): array
+    {
+        $queryBuilder = $this->getEntityManager()->createQueryBuilder();
+
+        $queryBuilder->select('t')
+            ->from(TransactionMapper::class, 't')
+            ->where('t.payee = :customerId OR t.payeer = :customerId')
+            ->setParameter('customerId', $customerId);
+
+        $extract = $queryBuilder->getQuery()->getResult();
+
+        return $extract;
     }
 }
