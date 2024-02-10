@@ -16,7 +16,7 @@ use Exception;
 
 class CreateTransaction
 {
-    const STORE_USER = 'STORE';
+    const STORE_USER = 'STORE_USER';
     const CREDIT = 'CREDIT';
     const DEBIT = 'DEBIT';
 
