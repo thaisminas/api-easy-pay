@@ -12,12 +12,12 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class TransactionController extends AbstractController
 {
-    private $createTransactionUseCase;
+    private $createTransaction;
     private $getExtractUseCase;
 
     public function __construct(CreateTransaction $createTransaction, GetExtractByCustomer $getExtractUseCase)
     {
-        $this->createTransactionUseCase = $createTransaction;
+        $this->createTransaction = $createTransaction;
         $this->getExtractUseCase = $getExtractUseCase;
     }
 
@@ -29,7 +29,7 @@ class TransactionController extends AbstractController
         try {
             $data = json_decode($request->getContent(), true);
 
-            $this->createTransactionUseCase->execute($data);
+            $this->createTransaction->execute($data);
 
             return new JsonResponse([
                 'message' => 'transaction created successfully'

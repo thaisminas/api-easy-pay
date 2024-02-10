@@ -5,6 +5,7 @@ namespace App\Application\Factory;
 use App\Domain\Customer;
 use App\Domain\Wallet;
 use App\Infra\Repository\Mappers\WalletMapper;
+use DateTime;
 
 class WalletFactory
 {
@@ -13,7 +14,7 @@ class WalletFactory
         $walletMapper = new WalletMapper();
         $walletMapper->customer = $customer;
         $walletMapper->accountBalance = $operation['accountBalance'];
-        $walletMapper->updatedAt = new \DateTime();
+        $walletMapper->updatedAt = new DateTime();
         return $walletMapper;
     }
     public function fromDatabase(WalletMapper $walletMapper, Customer $customer): Wallet

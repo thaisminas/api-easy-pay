@@ -26,11 +26,6 @@ class Wallet
      */
     private $createdAt;
 
-    /**
-     * @var DateTime
-     */
-    private $updatedAt;
-
     public function __construct()
     {
         $this->createdAt = new DateTime();

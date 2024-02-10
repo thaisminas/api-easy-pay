@@ -30,7 +30,7 @@ class CreateTransaction
 
     private $serviceAuthorization;
 
-    private $notificationInterface;
+    private $notificationClient;
     private $walletRepository;
     private $transactionFactory;
 
@@ -38,7 +38,7 @@ class CreateTransaction
         TransactionRepository         $transactionRepository,
         CustomerRepository            $customerRepository,
         ServiceAuthorizationInterface $serviceAuthorization,
-        NotificationInterface         $notificationInterface,
+        NotificationInterface         $notificationClient,
         WalletRepository              $walletRepository,
         TransactionFactory            $transactionFactory
     )
@@ -46,7 +46,7 @@ class CreateTransaction
         $this->trasactionRepository = $transactionRepository;
         $this->customerRepository = $customerRepository;
         $this->serviceAuthorization = $serviceAuthorization;
-        $this->notificationInterface = $notificationInterface;
+        $this->notificationClient = $notificationClient;
         $this->walletRepository = $walletRepository;
         $this->transactionFactory = $transactionFactory;
     }
@@ -74,10 +74,10 @@ class CreateTransaction
             $this->amountToDeductBalance($wallets, $transaction);
             $this->trasactionRepository->create($transaction);
             $this->sendNotification();
-        } catch (\Error $err){
+        } catch (Exception $err){
             $this->reverseAmountDeductedFromBalance($wallets, $transaction);
 
-            throw new \Exception($err);
+            throw new Exception($err);
         }
     }
 
@@ -89,7 +89,7 @@ class CreateTransaction
 
         while (!$notificationSent && $retryCount < $maxRetries) {
             try {
-                $this->notificationInterface->postNotification(json_encode([
+                $this->notificationClient->postNotification(json_encode([
                     'message' => 'transfer sent!',
                 ]));
 

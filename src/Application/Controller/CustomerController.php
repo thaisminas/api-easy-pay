@@ -12,11 +12,11 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CustomerController extends AbstractController
 {
-    private $createCustomerUseCase;
+    private $createCustomer;
 
     public function __construct(CreateCustomer $createCustomer)
     {
-        $this->createCustomerUseCase = $createCustomer;
+        $this->createCustomer = $createCustomer;
     }
 
     /**
@@ -27,7 +27,7 @@ class CustomerController extends AbstractController
         try {
             $data = json_decode($request->getContent(), true);
 
-            $customer = $this->createCustomerUseCase->execute($data);
+            $customer = $this->createCustomer->execute($data);
 
             $responseData = [
                 'customer' => $customer

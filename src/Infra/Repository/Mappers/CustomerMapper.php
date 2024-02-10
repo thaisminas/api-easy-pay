@@ -2,6 +2,7 @@
 
 namespace App\Infra\Repository\Mappers;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -49,6 +50,6 @@ class CustomerMapper
 
     public function __construct()
     {
-        $this->createdAt = new \DateTime();
+        $this->createdAt = new DateTime();
     }
 }

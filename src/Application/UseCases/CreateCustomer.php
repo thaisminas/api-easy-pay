@@ -7,6 +7,7 @@ use App\Domain\Exception\DocumentInvalidException;
 use App\Domain\Exception\InvalidRoleException;
 use App\Domain\Interfaces\CustomerRepository;
 use App\Infra\Repository\Mappers\CustomerMapper;
+use Exception;
 
 
 class CreateCustomer
@@ -42,7 +43,7 @@ class CreateCustomer
         }
 
         if(strlen($customer['name']) < 3){
-            throw new \Exception('Name is Invalid', 422);
+            throw new Exception('Name is Invalid', 422);
         }
 
         if($document === null || strlen($document) < 11){

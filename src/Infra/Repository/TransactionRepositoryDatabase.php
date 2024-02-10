@@ -8,6 +8,7 @@ use App\Domain\Transaction;
 use App\Infra\Repository\Mappers\TransactionMapper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use RuntimeException;
 
 class TransactionRepositoryDatabase extends ServiceEntityRepository implements TransactionRepository
 {
@@ -21,13 +22,13 @@ class TransactionRepositoryDatabase extends ServiceEntityRepository implements T
     public function create(Transaction $transaction): void
     {
         try {
-            $transactionEntityMapper = $this->transactionFactory->toDatabaseEntity($transaction);
+            $transactionMapper = $this->transactionFactory->toDatabaseEntity($transaction);
 
             $entityManager = $this->getEntityManager();
-            $entityManager->persist($transactionEntityMapper);
+            $entityManager->persist($transactionMapper);
             $entityManager->flush();
         } catch (\Exception $e) {
-            throw new \RuntimeException('Error try saving transaction to database', 500, $e);
+            throw new RuntimeException('Error try saving transaction to database', 500, $e);
         }
 
     }

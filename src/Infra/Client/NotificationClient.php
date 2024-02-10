@@ -3,6 +3,7 @@
 namespace App\Infra\Client;
 
 use App\Domain\Interfaces\NotificationInterface;
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\ResponseInterface;
@@ -29,7 +30,7 @@ class NotificationClient implements NotificationInterface
             ]);
 
         } catch (RequestException $e) {
-            throw new \Exception('Error send notification' . $e->getMessage());
+            throw new Exception('Error try send notification' . $e->getMessage());
         }
     }
 }

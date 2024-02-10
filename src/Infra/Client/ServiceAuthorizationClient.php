@@ -3,7 +3,9 @@
 namespace App\Infra\Client;
 
 use App\Domain\Interfaces\ServiceAuthorizationInterface;
+use Exception;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\ResponseInterface;
 
 class ServiceAuthorizationClient implements ServiceAuthorizationInterface
@@ -24,8 +26,8 @@ class ServiceAuthorizationClient implements ServiceAuthorizationInterface
         try {
             return $this->httpClient->get($endpoint);
 
-        } catch (\Exception $e) {
-            throw new \Exception('Error consult authorization' . $e->getMessage());
+        } catch (RequestException $e) {
+            throw new Exception('Error consult authorization' . $e->getMessage());
         }
     }
 }
