@@ -21,7 +21,7 @@ class WalletMapper
 
     /**
      * @ORM\OneToOne(targetEntity="CustomerMapper", inversedBy="wallet")
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
+     * @ORM\JoinColumn(name="customer_id", referencedColumnName="id", nullable=false, nullable=false)
      * @ORM\Column(type="integer")
      */
     public $customer;

@@ -4,13 +4,13 @@ namespace App\Infra\Repository;
 
 use App\Application\Factory\WalletFactory;
 use App\Domain\Customer;
-use App\Domain\Port\Inbound\WalletRepositoryPort;
+use App\Domain\Interfaces\WalletRepository;
 use App\Domain\Transaction;
 use App\Infra\Repository\Mappers\WalletMapper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-class WalletRepositoryPortDatabase extends ServiceEntityRepository implements WalletRepositoryPort
+class WalletRepositoryDatabase extends ServiceEntityRepository implements WalletRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -47,9 +47,9 @@ class WalletRepositoryPortDatabase extends ServiceEntityRepository implements Wa
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
-        $qb->select('walllet')
-            ->from(WalletMapper::class, 'walllet')
-            ->where('walllet.customer = :payeeId OR walllet.customer = :payeerId')
+        $qb->select('wallet')
+            ->from(WalletMapper::class, 'wallet')
+            ->where('wallet.customer = :payeeId OR wallet.customer = :payeerId')
             ->setParameter('payeeId', $transaction->getPayee()->getId())
             ->setParameter('payeerId', $transaction->getPayeer()->getId());
 
@@ -102,8 +102,8 @@ class WalletRepositoryPortDatabase extends ServiceEntityRepository implements Wa
         $types = [
             'customerPayeeId' => \PDO::PARAM_INT,
             'customerPayeerId' => \PDO::PARAM_INT,
-            'newBalancePayee' => \PDO::PARAM_INT,
-            'newBalancePayeer' => \PDO::PARAM_INT
+            'newBalancePayee' => \PDO::PARAM_STR,
+            'newBalancePayeer' => \PDO::PARAM_STR
         ];
 
         $connection->executeQuery($sql, $params, $types);

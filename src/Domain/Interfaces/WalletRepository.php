@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Domain\Port\Inbound;
+namespace App\Domain\Interfaces;
 
 use App\Domain\Customer;
 use App\Domain\Transaction;
-use App\Domain\Wallet;
 use App\Infra\Repository\Mappers\WalletMapper;
 
-interface WalletRepositoryPort
+interface WalletRepository
 {
     public function save(Customer $customer, array $operation): WalletMapper;
     public function findAccountBalanceByCustomerId(array $customerId): WalletMapper;

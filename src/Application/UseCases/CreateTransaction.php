@@ -3,17 +3,15 @@
 namespace App\Application\UseCases;
 
 use App\Application\Factory\TransactionFactory;
-use App\Application\Factory\WalletFactory;
-use App\Domain\Customer;
 use App\Domain\Exception\InsufficientBalanceException;
 use App\Domain\Exception\NotificationException;
 use App\Domain\Exception\ServiceUnauthorizedException;
 use App\Domain\Exception\UnauthorizedOperationException;
-use App\Domain\Port\Inbound\CustomerRepositoryPort;
-use App\Domain\Port\Inbound\NotificationClientPort;
-use App\Domain\Port\Inbound\ServiceAuthorizationPort;
-use App\Domain\Port\Inbound\TransactionRepositoryPort;
-use App\Domain\Port\Inbound\WalletRepositoryPort;
+use App\Domain\Interfaces\CustomerRepository;
+use App\Domain\Interfaces\NotificationInterface;
+use App\Domain\Interfaces\ServiceAuthorizationInterface;
+use App\Domain\Interfaces\TransactionRepository;
+use App\Domain\Interfaces\WalletRepository;
 use App\Domain\Transaction;
 use Exception;
 
@@ -26,36 +24,36 @@ class CreateTransaction
 
     private $trasactionRepository;
 
-    private $serviceAuthorizationPort;
+    private $serviceAuthorizationInterface;
 
-    private $notificationClientPort;
-    private $walletRepositoryPort;
+    private $notificationInterface;
+    private $walletRepository;
 
     public function __construct(
-        TransactionRepositoryPort $transactionRepository,
-        CustomerRepositoryPort    $customerRepository,
-        ServiceAuthorizationPort  $serviceAuthorizationPort,
-        NotificationClientPort    $notificationClientPort,
-        WalletRepositoryPort  $walletRepositoryPort
+        TransactionRepository         $transactionRepository,
+        CustomerRepository            $customerRepository,
+        ServiceAuthorizationInterface $serviceAuthorizationInterface,
+        NotificationInterface         $notificationInterface,
+        WalletRepository              $walletRepository
     )
     {
         $this->trasactionRepository = $transactionRepository;
         $this->customerRepository = $customerRepository;
-        $this->serviceAuthorizationPort = $serviceAuthorizationPort;
-        $this->notificationClientPort = $notificationClientPort;
-        $this->walletRepositoryPort = $walletRepositoryPort;
+        $this->serviceAuthorizationInterface = $serviceAuthorizationInterface;
+        $this->notificationInterface = $notificationInterface;
+        $this->walletRepository = $walletRepository;
     }
 
     public function execute(Array $data): void
     {
         $customers = $this->customerRepository->findCustomerByPayeeAndPayeer($data['payeeId'], $data['payeerId']);
         $transaction = TransactionFactory::createFromArray($customers, $data);
-        $wallets = $this->walletRepositoryPort->findCustomerByPayeeAndPayeer($transaction);
+        $wallets = $this->walletRepository->findCustomerByPayeeAndPayeer($transaction);
 
         try {
             $this->validateTransaction($transaction, $wallets);
 
-            $situation = $this->serviceAuthorizationPort->getAuthorization();
+            $situation = $this->serviceAuthorizationInterface->getAuthorization();
 
             if($situation->getStatusCode() !== 200){
                 throw new ServiceUnauthorizedException('unauthorized transaction');
@@ -81,7 +79,7 @@ class CreateTransaction
 
         while (!$notificationSent && $retryCount < $maxRetries) {
             try {
-                $this->notificationClientPort->postNotification(json_encode([
+                $this->notificationInterface->postNotification(json_encode([
                     'message' => 'transfer sent!',
                 ]));
 
@@ -123,7 +121,7 @@ class CreateTransaction
 
         $balanceData = balanceDataFormatter($wallets, $transaction);
 
-        $this->walletRepositoryPort->updateAccountBalanceByCustomerId($balanceData);
+        $this->walletRepository->updateAccountBalanceByCustomerId($balanceData);
     }
 
     private function amountToDeductBalance(array $wallets, Transaction $transaction)

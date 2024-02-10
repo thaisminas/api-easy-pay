@@ -24,17 +24,22 @@ class CustomerMapper
     public $name;
 
     /**
-     * @ORM\Column(type="string", length=150, unique=true)
+     * @ORM\Column(type="string", length=20, unique=true)
      */
     public $document;
 
     /**
-     * @ORM\Column(type="string", length=150, unique=true)
+     * @ORM\Column(type="string", length=100, unique=true)
      */
     public $email;
 
     /**
-     * @ORM\Column(type="string", length=20)
+     * @ORM\Column(type="string", length=30)
+     */
+    public $password;
+
+    /**
+     * @ORM\Column(type="string", length=10)
      */
     public $role;
 
@@ -54,6 +59,7 @@ class CustomerMapper
         $this->document = $customer->getDocument();
         $this->email = $customer->getEmail();
         $this->role = $customer->getRole();
+        $this->password = $customer->getPassword();
 
         return $this;
     }
@@ -66,6 +72,7 @@ class CustomerMapper
         $customer->setEmail($customerMapper->email);
         $customer->setDocument($customerMapper->document);
         $customer->setRole($customerMapper->role);
+        $customer->setPassword($customerMapper->password);
 
         return $customer;
     }

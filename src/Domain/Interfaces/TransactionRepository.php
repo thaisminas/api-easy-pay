@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Domain\Port\Inbound;
+namespace App\Domain\Interfaces;
 
 use App\Domain\Transaction;
 
-interface TransactionRepositoryPort
+interface TransactionRepository
 {
     public function create(Transaction $transaction): void;
 

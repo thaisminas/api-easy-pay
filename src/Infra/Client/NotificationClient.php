@@ -2,12 +2,12 @@
 
 namespace App\Infra\Client;
 
-use App\Domain\Port\Inbound\NotificationClientPort;
+use App\Domain\Interfaces\NotificationInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\ResponseInterface;
 
-class NotificationClient implements NotificationClientPort
+class NotificationClient implements NotificationInterface
 {
     /**
      * @var Client

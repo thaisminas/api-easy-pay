@@ -3,13 +3,13 @@
 namespace App\Infra\Repository;
 
 use App\Domain\Customer;
-use App\Domain\Port\Inbound\CustomerRepositoryPort;
+use App\Domain\Interfaces\CustomerRepository;
 use App\Infra\Repository\Mappers\CustomerMapper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class CustomerRepositoryPortDatabase extends ServiceEntityRepository implements CustomerRepositoryPort
+class CustomerRepositoryDatabase extends ServiceEntityRepository implements CustomerRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -44,17 +44,12 @@ class CustomerRepositoryPortDatabase extends ServiceEntityRepository implements 
 
         $entities = [];
 
+        $customerMapper = new CustomerMapper();
+
         foreach ($customers as $customer){
-            $customerEntity = new Customer();
-            $customerEntity->setId($customer->id);
-            $customerEntity->setName($customer->name);
-            $customerEntity->setEmail($customer->email);
-            $customerEntity->setDocument($customer->document);
-            $customerEntity->setRole($customer->role);
-
-            $entities[$customerEntity->getId()] = $customerEntity;
+            $customer = $customerMapper->fromDatabase($customer);
+            $entities[$customer->getId()] = $customer;
         }
-
         return $entities;
     }
 
@@ -94,7 +89,7 @@ class CustomerRepositoryPortDatabase extends ServiceEntityRepository implements 
             throw new NotFoundHttpException('Customer not found');
         }
 
-        $query = $qb->getQuery()->getSingleResult();
+        $query = $qb->getQuery()->getSingleResult() ?? null;
 
         $customerEntity = new CustomerMapper();
         return $customerEntity->fromDatabase($query);

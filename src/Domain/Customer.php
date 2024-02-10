@@ -3,7 +3,6 @@
 namespace App\Domain;
 
 use DateTime;
-use Symfony\Component\Validator\Constraints as Assert;
 
 class Customer
 {
@@ -26,6 +25,11 @@ class Customer
      * @var string
      */
     private $email;
+
+    /**
+     * @var string
+     */
+    private $password;
 
     /**
      * @var string
@@ -71,6 +75,16 @@ class Customer
     public function setEmail(string $email): void
     {
         $this->email = $email;
+    }
+
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): void
+    {
+        $this->password = $password;
     }
 
     public function getRole(): string

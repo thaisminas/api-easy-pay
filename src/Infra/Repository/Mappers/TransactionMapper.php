@@ -39,7 +39,7 @@ class TransactionMapper
     private $amount;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=10)
      */
     private $operationType;
 

@@ -15,6 +15,7 @@ class CustomerFactory
         $customer->setEmail($customerData['email'] );
         $customer->setDocument($customerData['document']);
         $customer->setRole(strtoupper($customerData['role']));
+        $customer->setPassword($customerData['password']);
 
         return $customer;
     }

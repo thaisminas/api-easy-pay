@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Domain\Port\Inbound;
+namespace App\Domain\Interfaces;
 
 use Psr\Http\Message\ResponseInterface;
 
-interface NotificationClientPort
+interface NotificationInterface
 {
     public function postNotification(string $data): ResponseInterface;
 

@@ -15,7 +15,7 @@ class TransactionFactory
         $transaction->setPayee($customers[$payeeId]);
         $transaction->setPayeer($customers[$payeerId]);
         $transaction->setAmount($data['amount']);
-        $transaction->setOperationType($data['operationType']);
+        $transaction->setOperationType(strtoupper($data['operationType']));
 
         return $transaction;
     }

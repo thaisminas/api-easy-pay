@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Domain\Port\Inbound;
+namespace App\Domain\Interfaces;
 
 use App\Domain\Customer;
 use App\Infra\Repository\Mappers\CustomerMapper;
 
-interface CustomerRepositoryPort
+interface CustomerRepository
 {
     public function save(Customer $customer): CustomerMapper;
     public function findCustomerByPayeeAndPayeer(int $payeeId, int $payeerId): array;

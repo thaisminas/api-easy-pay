@@ -2,15 +2,13 @@
 
 namespace App\Infra\Repository;
 
-use App\Domain\Customer;
-use App\Domain\Port\Inbound\TransactionRepositoryPort;
+use App\Domain\Interfaces\TransactionRepository;
 use App\Domain\Transaction;
-use App\Infra\Repository\Mappers\CustomerMapper;
 use App\Infra\Repository\Mappers\TransactionMapper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-class TransactionRepositoryPortDatabase extends ServiceEntityRepository implements TransactionRepositoryPort
+class TransactionRepositoryDatabase extends ServiceEntityRepository implements TransactionRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

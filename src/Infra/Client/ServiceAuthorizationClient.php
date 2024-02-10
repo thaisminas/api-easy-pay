@@ -2,13 +2,11 @@
 
 namespace App\Infra\Client;
 
-use App\Domain\Port\Inbound\ServiceAuthorizationPort;
+use App\Domain\Interfaces\ServiceAuthorizationInterface;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\ResponseInterface;
-use Symfony\Component\HttpFoundation\Response;
 
-class ServiceAuthorizationClient implements ServiceAuthorizationPort
+class ServiceAuthorizationClient implements ServiceAuthorizationInterface
 {
     /**
      * @var Client
@@ -21,7 +19,7 @@ class ServiceAuthorizationClient implements ServiceAuthorizationPort
     }
     public function getAuthorization(): ResponseInterface
     {
-        $endpoint = 'https://run.mocky.io/v3/5794d450-d2e2-4412-8131-73d0293ac1cc';
+        $endpoint = $_ENV['URL_SERVICE_AUTHORIZATION'];
 
         try {
             return $this->httpClient->get($endpoint);
