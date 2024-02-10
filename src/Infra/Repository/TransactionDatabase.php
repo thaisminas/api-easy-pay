@@ -3,14 +3,14 @@
 namespace App\Infra\Repository;
 
 use App\Application\Factory\TransactionFactory;
-use App\Domain\Interfaces\TransactionRepository;
+use App\Application\Interfaces\TransactionInterface;
 use App\Domain\Transaction;
 use App\Infra\Repository\Mappers\TransactionMapper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use RuntimeException;
 
-class TransactionRepositoryDatabase extends ServiceEntityRepository implements TransactionRepository
+class TransactionDatabase extends ServiceEntityRepository implements TransactionInterface
 {
     private $transactionFactory;
     public function __construct(ManagerRegistry $registry, TransactionFactory $transactionFactory)

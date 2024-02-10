@@ -2,11 +2,9 @@
 
 namespace App\Infra\Client;
 
-use App\Domain\Interfaces\NotificationInterface;
+use App\Application\Interfaces\NotificationInterface;
 use Exception;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
-use Psr\Http\Message\ResponseInterface;
 
 class NotificationClient implements NotificationInterface
 {
@@ -20,17 +18,25 @@ class NotificationClient implements NotificationInterface
         $this->httpClient = new Client();
     }
 
-    public function postNotification(string $data): ResponseInterface
+    public function postNotification(string $data): bool
     {
         $endpoint = 'https://run.mocky.io/v3/54dc2cf1-3add-45b5-b5a9-6bf7e7f1f4a6';
 
         try {
-            return $this->httpClient->post($endpoint,  [
+            $response = $this->httpClient->post($endpoint,  [
                 'json' => $data
             ]);
 
-        } catch (RequestException $e) {
-            throw new Exception('Error try send notification' . $e->getMessage());
+            $message = json_decode($response->getBody()->getContents(), true)['message'];
+
+            if(!$message){
+                return false;
+            }
+
+            return $message;
+        }catch (Exception $e){
+            throw new Exception('Error try send message');
         }
+
     }
 }

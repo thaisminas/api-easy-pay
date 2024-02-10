@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Domain\Interfaces;
+namespace App\Application\Interfaces;
 
 use App\Domain\Transaction;
 
-interface TransactionRepository
+interface TransactionInterface
 {
     public function create(Transaction $transaction): void;
     public function findExtractByCustomer(int $customerId): array;

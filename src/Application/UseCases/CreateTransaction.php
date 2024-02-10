@@ -3,17 +3,13 @@
 namespace App\Application\UseCases;
 
 use App\Application\Factory\TransactionFactory;
+use App\Application\Interfaces\CustomerInterface;
+use App\Application\Interfaces\ServiceAuthorizationInterface;
+use App\Application\Interfaces\TransactionInterface;
+use App\Application\Interfaces\WalletInterface;
 use App\Domain\Exception\InsufficientBalanceException;
-use App\Domain\Exception\NotFoundException;
-use App\Domain\Exception\NotificationException;
 use App\Domain\Exception\OperationTypeException;
-use App\Domain\Exception\ServiceUnauthorizedException;
 use App\Domain\Exception\UnauthorizedOperationException;
-use App\Domain\Interfaces\CustomerRepository;
-use App\Domain\Interfaces\NotificationInterface;
-use App\Domain\Interfaces\ServiceAuthorizationInterface;
-use App\Domain\Interfaces\TransactionRepository;
-use App\Domain\Interfaces\WalletRepository;
 use App\Domain\Transaction;
 use Exception;
 
@@ -23,86 +19,47 @@ class CreateTransaction
     const STORE_USER = 'STORE';
     const CREDIT = 'CREDIT';
     const DEBIT = 'DEBIT';
-    const STATUS_OK = 200;
-    private $customerRepository;
 
-    private $trasactionRepository;
-
+    private $transactionInterface;
+    private $customerInterface;
     private $serviceAuthorization;
-
-    private $notificationClient;
-    private $walletRepository;
+    private $walletInterface;
     private $transactionFactory;
+    private $notificationUseCase;
 
     public function __construct(
-        TransactionRepository         $transactionRepository,
-        CustomerRepository            $customerRepository,
+        TransactionInterface          $transactionInterface,
+        CustomerInterface             $customerRepository,
         ServiceAuthorizationInterface $serviceAuthorization,
-        NotificationInterface         $notificationClient,
-        WalletRepository              $walletRepository,
-        TransactionFactory            $transactionFactory
+        WalletInterface               $walletInterface,
+        TransactionFactory   $transactionFactory,
+        SendNotification     $notificationUseCase
     )
     {
-        $this->trasactionRepository = $transactionRepository;
-        $this->customerRepository = $customerRepository;
+        $this->transactionInterface = $transactionInterface;
+        $this->customerInterface = $customerRepository;
         $this->serviceAuthorization = $serviceAuthorization;
-        $this->notificationClient = $notificationClient;
-        $this->walletRepository = $walletRepository;
+        $this->walletInterface = $walletInterface;
         $this->transactionFactory = $transactionFactory;
+        $this->notificationUseCase = $notificationUseCase;
     }
 
     public function execute(Array $data): void
     {
-        $customers = $this->customerRepository->findCustomerByPayeeAndPayeer($data['payeeId'], $data['payeerId']);
-
-        if(count($customers) <= 1){
-            throw new NotFoundException('Customer not found for create transaction');
-        }
+        $customers = $this->customerInterface->findCustomerByPayeeAndPayeer($data['payeeId'], $data['payeerId']);
 
         $transaction = $this->transactionFactory->createFromArray($customers, $data);
-        $wallets = $this->walletRepository->findCustomerByPayeeAndPayeer($transaction);
+        $wallets = $this->walletInterface->findCustomerByPayeeAndPayeer($transaction);
+        $this->validateTransaction($transaction, $wallets);
+        $this->serviceAuthorization->getAuthorization();
 
         try {
-            $this->validateTransaction($transaction, $wallets);
-
-            $situation = $this->serviceAuthorization->getAuthorization();
-
-            if($situation->getStatusCode() !== self::STATUS_OK){
-                throw new ServiceUnauthorizedException('unauthorized transaction');
-            }
-
-            $this->amountToDeductBalance($wallets, $transaction);
-            $this->trasactionRepository->create($transaction);
-            $this->sendNotification();
+            $this->updateBalances($wallets, $transaction, -1);
+            $this->transactionInterface->create($transaction);
+            $this->notificationUseCase->execute();
         } catch (Exception $err){
-            $this->reverseAmountDeductedFromBalance($wallets, $transaction);
-
-            throw new Exception($err);
-        }
-    }
-
-    private function sendNotification(): void
-    {
-        $maxRetries = 3;
-        $retryCount = 0;
-        $notificationSent = false;
-
-        while (!$notificationSent && $retryCount < $maxRetries) {
-            try {
-                $this->notificationClient->postNotification(json_encode([
-                    'message' => 'transfer sent!',
-                ]));
-
-                $notificationSent = true;
-
-            } catch (Exception $e) {
-                $retryCount++;
-                sleep(1);
-            }
-        }
-
-        if (!$notificationSent) {
-            throw new NotificationException('Failed to send notification after 3 retries.');
+            $this->updateBalances($wallets, $transaction, 1);
+            throw new Exception('An error occurred while trying to process the transaction');
         }
     }
 
@@ -127,7 +84,7 @@ class CreateTransaction
         }
     }
 
-    private function updateBalances(array $wallets, Transaction $transaction, $amountModifier): void
+    private function updateBalances(array $wallets, Transaction $transaction, int $amountModifier): void
     {
         $payeerId = $transaction->getPayeer()->getId();
         $payeeId = $transaction->getPayee()->getId();
@@ -141,16 +98,6 @@ class CreateTransaction
 
         $balanceData = balanceDataFormatter($wallets, $transaction);
 
-        $this->walletRepository->updateAccountBalanceByCustomerId($balanceData);
-    }
-
-    private function amountToDeductBalance(array $wallets, Transaction $transaction)
-    {
-        $this->updateBalances($wallets, $transaction, -1);
-    }
-
-    private function reverseAmountDeductedFromBalance(array $wallets, Transaction $transaction)
-    {
-        $this->updateBalances($wallets, $transaction, 1);
+        $this->walletInterface->updateAccountBalanceByCustomerId($balanceData);
     }
 }

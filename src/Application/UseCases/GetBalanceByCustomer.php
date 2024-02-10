@@ -3,31 +3,31 @@
 namespace App\Application\UseCases;
 
 use App\Application\Factory\WalletFactory;
-use App\Domain\Interfaces\CustomerRepository;
-use App\Domain\Interfaces\WalletRepository;
+use App\Application\Interfaces\CustomerInterface;
+use App\Application\Interfaces\WalletInterface;
 use App\Domain\Wallet;
 
 class GetBalanceByCustomer
 {
-    private $walletRepository;
-    private $customerRepository;
+    private $walletInterface;
+    private $customerInterface;
     private $walletFactory;
 
     public function __construct(
-        WalletRepository $walletRepository,
-        CustomerRepository $customerRepository,
-        WalletFactory $walletFactory
+        WalletInterface   $walletInterface,
+        CustomerInterface $customerInterface,
+        WalletFactory     $walletFactory
     )
     {
-        $this->walletRepository = $walletRepository;
-        $this->customerRepository = $customerRepository;
+        $this->walletInterface = $walletInterface;
+        $this->customerInterface = $customerInterface;
         $this->walletFactory = $walletFactory;
     }
 
     public function execute(int $customerId): Wallet
     {
-        $customer = $this->customerRepository->findById($customerId);
-        $walletMapper = $this->walletRepository->findAccountBalanceByCustomerId($customerId);
+        $customer = $this->customerInterface->findById($customerId);
+        $walletMapper = $this->walletInterface->findAccountBalanceByCustomerId($customerId);
 
         return $this->walletFactory->fromDatabase($walletMapper, $customer);
     }

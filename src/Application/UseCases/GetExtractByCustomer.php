@@ -2,19 +2,19 @@
 
 namespace App\Application\UseCases;
 
-use App\Domain\Interfaces\TransactionRepository;
+use App\Application\Interfaces\TransactionInterface;
 
 class GetExtractByCustomer
 {
-    private $trasactionRepository;
-    public function __construct(TransactionRepository $transactionRepository)
+    private $trasactionInterface;
+    public function __construct(TransactionInterface $transactionInterface)
     {
-        $this->trasactionRepository = $transactionRepository;
+        $this->trasactionInterface = $transactionInterface;
     }
 
     public function execute(int $customerId): array
     {
-        return $this->trasactionRepository->findExtractByCustomer($customerId);
+        return $this->trasactionInterface->findExtractByCustomer($customerId);
     }
 
 }

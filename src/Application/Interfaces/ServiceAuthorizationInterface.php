@@ -1,12 +1,12 @@
 <?php
 
 
-namespace App\Domain\Interfaces;
+namespace App\Application\Interfaces;
 
 use Psr\Http\Message\ResponseInterface;
 
 interface ServiceAuthorizationInterface
 {
-    public function getAuthorization(): ResponseInterface;
+    public function getAuthorization(): void;
 
 }

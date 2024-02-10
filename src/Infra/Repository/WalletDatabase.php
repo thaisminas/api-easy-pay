@@ -3,14 +3,14 @@
 namespace App\Infra\Repository;
 
 use App\Application\Factory\WalletFactory;
+use App\Application\Interfaces\WalletInterface;
 use App\Domain\Customer;
-use App\Domain\Interfaces\WalletRepository;
 use App\Domain\Transaction;
 use App\Infra\Repository\Mappers\WalletMapper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-class WalletRepositoryDatabase extends ServiceEntityRepository implements WalletRepository
+class WalletDatabase extends ServiceEntityRepository implements WalletInterface
 {
     private $walletFactory;
     public function __construct(ManagerRegistry $registry, WalletFactory $walletFactory)

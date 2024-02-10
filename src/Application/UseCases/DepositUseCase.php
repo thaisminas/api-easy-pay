@@ -2,24 +2,24 @@
 
 namespace App\Application\UseCases;
 
-use App\Domain\Interfaces\CustomerRepository;
-use App\Domain\Interfaces\WalletRepository;
+use App\Application\Interfaces\CustomerInterface;
+use App\Application\Interfaces\WalletInterface;
 use App\Infra\Repository\Mappers\WalletMapper;
 
 class DepositUseCase
 {
-    private $depositRepository;
-    private $customerRepository;
+    private $walletInterface;
+    private $customerInterface;
 
-    public function __construct(WalletRepository $depositRepository, CustomerRepository $userRepository)
+    public function __construct(WalletInterface $walletInterface, CustomerInterface $customerInterface)
     {
-        $this->depositRepository = $depositRepository;
-        $this->customerRepository = $userRepository;
+        $this->walletInterface = $walletInterface;
+        $this->customerInterface = $customerInterface;
     }
     public function execute(array $operation): WalletMapper
     {
-        $customerById = $this->customerRepository->findById($operation['customer']);
+        $customerById = $this->customerInterface->findById($operation['customer']);
 
-        return $this->depositRepository->save($customerById, $operation);
+        return $this->walletInterface->save($customerById, $operation);
     }
 }

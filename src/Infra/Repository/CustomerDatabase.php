@@ -3,14 +3,14 @@
 namespace App\Infra\Repository;
 
 use App\Application\Factory\CustomerFactory;
+use App\Application\Interfaces\CustomerInterface;
 use App\Domain\Customer;
 use App\Domain\Exception\NotFoundException;
-use App\Domain\Interfaces\CustomerRepository;
 use App\Infra\Repository\Mappers\CustomerMapper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-class CustomerRepositoryDatabase extends ServiceEntityRepository implements CustomerRepository
+class CustomerDatabase extends ServiceEntityRepository implements CustomerInterface
 {
     private $customerMapper;
     private $customerFactory;
@@ -51,6 +51,11 @@ class CustomerRepositoryDatabase extends ServiceEntityRepository implements Cust
             $customer = $this->customerFactory->fromDatabase($customer);
             $entities[$customer->getId()] = $customer;
         }
+
+        if(count($entities) <= 1){
+            throw new NotFoundException('Payee or Payeer not found in database');
+        }
+
         return $entities;
     }
 

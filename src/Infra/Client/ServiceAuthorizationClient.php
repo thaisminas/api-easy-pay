@@ -2,14 +2,15 @@
 
 namespace App\Infra\Client;
 
-use App\Domain\Interfaces\ServiceAuthorizationInterface;
+use App\Application\Interfaces\ServiceAuthorizationInterface;
+use App\Domain\Exception\ServiceUnauthorizedException;
 use Exception;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
-use Psr\Http\Message\ResponseInterface;
 
 class ServiceAuthorizationClient implements ServiceAuthorizationInterface
 {
+    const AUTORIZADO = 'Autorizado';
+
     /**
      * @var Client
      */
@@ -19,15 +20,17 @@ class ServiceAuthorizationClient implements ServiceAuthorizationInterface
     {
         $this->httpClient = new Client();
     }
-    public function getAuthorization(): ResponseInterface
+    public function getAuthorization(): void
     {
         $endpoint = 'https://run.mocky.io/v3/5794d450-d2e2-4412-8131-73d0293ac1cc';
 
-        try {
-            return $this->httpClient->get($endpoint);
+        $response = $this->httpClient->get($endpoint);
+        $body = json_decode($response->getBody()->getContents(), true);
 
-        } catch (RequestException $e) {
-            throw new Exception('Error consult authorization' . $e->getMessage());
+        if ($body['message'] === self::AUTORIZADO) {
+            return;
         }
+
+        throw new ServiceUnauthorizedException('unauthorized transaction');
     }
 }

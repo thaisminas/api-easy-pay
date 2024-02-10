@@ -3,9 +3,9 @@
 namespace App\Application\UseCases;
 
 use App\Application\Factory\CustomerFactory;
+use App\Application\Interfaces\CustomerInterface;
 use App\Domain\Exception\DocumentInvalidException;
 use App\Domain\Exception\InvalidRoleException;
-use App\Domain\Interfaces\CustomerRepository;
 use App\Infra\Repository\Mappers\CustomerMapper;
 use Exception;
 
@@ -14,12 +14,12 @@ class CreateCustomer
 {
     const COMMON = 'COMMON';
     const STORE_USER = 'STORE_USER';
-    private $customerRepository;
+    private $customerInterface;
     private $customerFactory;
 
-    public function __construct(CustomerRepository $customerRepository, CustomerFactory $customerFactory)
+    public function __construct(CustomerInterface $customerInterface, CustomerFactory $customerFactory)
     {
-        $this->customerRepository = $customerRepository;
+        $this->customerInterface = $customerInterface;
         $this->customerFactory = $customerFactory;
     }
 
@@ -30,7 +30,7 @@ class CreateCustomer
         $customer['document'] = validateDocument($customer);
         $customerEntity = $this->customerFactory->createFromArray($customer);
 
-        return $this->customerRepository->save($customerEntity);
+        return $this->customerInterface->save($customerEntity);
     }
 
     private function validateCustomer(array $customer)
