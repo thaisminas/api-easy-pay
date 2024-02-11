@@ -3,12 +3,16 @@
 namespace App\Application\Controller;
 
 use App\Application\UseCases\CreateCustomer;
+use App\Infra\Repository\Mappers\CustomerMapper;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use OpenApi\Annotations as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Nelmio\ApiDocBundle\Annotation\Model;
+
 
 class CustomerController extends AbstractController
 {
@@ -21,6 +25,21 @@ class CustomerController extends AbstractController
 
     /**
      * @Route("/api/customer", methods={"POST"})
+     * @OA\Post(description="Create new customer")
+     * @OA\RequestBody(@Model(type=CustomerMapper::class, groups={"create"}))
+     * @OA\Response(
+     *       response=201,
+     *       description="Created"
+     *  )
+     * @OA\Response(
+     *        response=409,
+     *        description="Conflict"
+     *   )
+     * @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *    )
+     * @OA\Tag(name="customer")
      */
     public function createCustomer(Request $request): Response
     {

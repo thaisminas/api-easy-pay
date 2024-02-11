@@ -4,18 +4,20 @@ namespace App\Application\Controller;
 
 use App\Application\UseCases\CreateTransaction;
 use App\Application\UseCases\GetExtractByCustomer;
+use App\Infra\Repository\Mappers\TransactionMapper;
+use OpenApi\Annotations as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\RateLimiter\RateLimiterFactory;
 use Symfony\Component\Routing\Annotation\Route;
+use Nelmio\ApiDocBundle\Annotation\Model;
 
 class TransactionController extends AbstractController
 {
     private $createTransaction;
     private $getExtractUseCase;
-    private $rateLimitFactory;
 
     public function __construct(
         CreateTransaction $createTransaction,
@@ -27,7 +29,30 @@ class TransactionController extends AbstractController
     }
 
     /**
-     * @Route("/transaction/extract/{customerId}", name="getExtractByCustomer", methods={"GET"})
+     * @Route("/api/transaction", name="createTransaction", methods={"POST"})
+     * @OA\Post(description="Create new transaction")
+     * @OA\RequestBody(@Model(type=TransactionMapper::class, groups={"default"}))
+     * @OA\Response(
+     *        response=200,
+     *        description="Success message"
+     *   )
+     * @OA\Response(
+     *         response=429,
+     *         description="Too Many Requests"
+     *    )
+     * @OA\Response(
+     *        response=201,
+     *        description="Created"
+     *   )
+     * @OA\Response(
+     *          response=500,
+     *          description="Internal Server Error"
+     *     )
+     * @OA\Response(
+     *          response=422,
+     *          description="Unprocessable Entity"
+     *     )
+     * @OA\Tag(name="transaction")
      */
     public function createTransaction(Request $request,  RateLimiterFactory $anonymousApiLimiter): JsonResponse
     {
@@ -64,6 +89,13 @@ class TransactionController extends AbstractController
 
     /**
      * @Route("/transaction/extract/{customerId}", name="getExtractByCustomer", methods={"GET"})
+     * @OA\Get(description="obter extrato por cliente")
+     * @OA\Response(
+     *       response="200",
+     *     description="OK",
+     *       @OA\Schema(ref="#/components/schemas/TransactionMapper")
+     *   )
+     * @OA\Tag(name="transaction")
      */
     public function getExtractByCustomer(int $customerId): JsonResponse
     {
