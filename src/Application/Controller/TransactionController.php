@@ -8,14 +8,19 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\RateLimiter\RateLimiterFactory;
 use Symfony\Component\Routing\Annotation\Route;
 
 class TransactionController extends AbstractController
 {
     private $createTransaction;
     private $getExtractUseCase;
+    private $rateLimitFactory;
 
-    public function __construct(CreateTransaction $createTransaction, GetExtractByCustomer $getExtractUseCase)
+    public function __construct(
+        CreateTransaction $createTransaction,
+        GetExtractByCustomer $getExtractUseCase
+    )
     {
         $this->createTransaction = $createTransaction;
         $this->getExtractUseCase = $getExtractUseCase;
@@ -24,15 +29,31 @@ class TransactionController extends AbstractController
     /**
      * @Route("/transaction/extract/{customerId}", name="getExtractByCustomer", methods={"GET"})
      */
-    public function createTransaction(Request $request): JsonResponse
+    public function createTransaction(Request $request,  RateLimiterFactory $anonymousApiLimiter): JsonResponse
     {
+        $limiter = $anonymousApiLimiter->create($request->getClientIp());
+        $limit = $limiter->consume();
+        $headers = [
+            'X-RateLimit-Remaining' => $limit->getRemainingTokens(),
+            'X-RateLimit-Retry-After' => $limit->getRetryAfter()->getTimestamp() - time(),
+            'X-RateLimit-Limit' => $limit->getLimit(),
+        ];
+
+        if (false === $limit->isAccepted()) {
+            return new JsonResponse([
+                'error' => 'Too many requests',
+                'headers' => $headers
+            ], Response::HTTP_TOO_MANY_REQUESTS);
+        }
+
         try {
             $data = json_decode($request->getContent(), true);
 
             $this->createTransaction->execute($data);
 
             return new JsonResponse([
-                'message' => 'transaction created successfully'
+                'message' => 'transaction created successfully',
+                'headers' => $headers
             ], Response::HTTP_CREATED);
 
         } catch (\Exception $e) {
