@@ -9,7 +9,7 @@ use GuzzleHttp\Client;
 
 class ServiceAuthorizationClient implements ServiceAuthorizationInterface
 {
-    const AUTORIZADO = 'Autorizado';
+    const AUTHORIZED = 'Autorizado';
 
     /**
      * @var Client
@@ -27,7 +27,7 @@ class ServiceAuthorizationClient implements ServiceAuthorizationInterface
         $response = $this->httpClient->get($endpoint);
         $body = json_decode($response->getBody()->getContents(), true);
 
-        if ($body['message'] === self::AUTORIZADO) {
+        if ($body['message'] === self::AUTHORIZED) {
             return;
         }
 
