@@ -1,6 +1,6 @@
 <?php
 
-namespace App\CommandSeeds;
+namespace App\Seeds;
 
 use App\Infra\Repository\Mappers\WalletMapper;
 use DateTime;
@@ -26,7 +26,7 @@ class WalletSeedCommand extends Command
             ->setDescription('Populate database with initial data');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output):void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $customers = [
             [
@@ -44,6 +44,10 @@ class WalletSeedCommand extends Command
             [
                 'customer' => 4,
                 'accountBalance' => 3000.00
+            ],
+            [
+                'customer' => 5,
+                'accountBalance' => 500.00
             ]
         ];
 
@@ -58,5 +62,7 @@ class WalletSeedCommand extends Command
         }
 
         $output->writeln('Successfully created seed data');
+
+        return Command::SUCCESS;
     }
 }

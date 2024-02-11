@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\CommandSeeds;
+namespace App\Seeds;
 
 use App\Infra\Repository\Mappers\CustomerMapper;
 use Symfony\Component\Console\Command\Command;
@@ -26,7 +26,7 @@ class CustomerSeedCommand extends Command
             ->setDescription('Populate database with initial data');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output):void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $customers = [
             [
@@ -56,7 +56,14 @@ class CustomerSeedCommand extends Command
                 'email' => 'comercial.miranda@gmail.com',
                 'role' => 'STORE_USER',
                 'password' => '54545'
-            ]
+            ],
+            [
+                'name' => 'Carla Figueiredo da Silva',
+                'document' => '79640779024',
+                'email' => 'carla.silva@gmail.com',
+                'role' => 'COMMON',
+                'password' => 'dsf099'
+            ],
         ];
 
         foreach ($customers as $customer){
@@ -72,5 +79,7 @@ class CustomerSeedCommand extends Command
         }
 
         $output->writeln('Successfully created seed data');
+
+        return Command::SUCCESS;
     }
 }

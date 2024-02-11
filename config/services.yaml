@@ -15,6 +15,6 @@ services:
         resource: '../src/Application/Controller/'
         tags: ['controller.service_arguments']
 
-    App\CommandSeeds\:
-        resource: '../src/CommandSeeds/'
+    App\Seeds\:
+        resource: '../src/Seeds/'
         tags: ['console.command']
