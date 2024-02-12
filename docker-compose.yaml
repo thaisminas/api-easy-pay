@@ -1,15 +1,36 @@
 version: '3'
 
 services:
-  database:
-    image: php:7.2-apache
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"
+    depends_on:
+      - db
     volumes:
-      - ./var/data.db3:/var/www/html/data.db3
+      - .:/var/www/html
+
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: pay
+      MYSQL_USER: pay_user
+      MYSQL_PASSWORD: pay_pass
     ports:
-      - 5431:5431
-    # command: php -S 0.0.0.0:5431 -t public
-  adminer:
-    image: adminer
-    restart: always
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
     ports:
-      - 8060:8070
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: root
+
+volumes:
+  db_data:
