@@ -7,7 +7,7 @@
 - [Tecnologia](#tecnologia)
 - [Instalação](#instalação)
 - [PHP MyAdmin](#php-myadmin)
-- [Arquitetura](#arquitetura)
+- [Fluxo da API](#fluxo)
 - [Swagger](#swagger)
 
 <hr>
@@ -85,10 +85,9 @@ Para visualizar os dados do banco acesse a url:
 
 <hr>
 
-## Arquitetura
+## Fluxo
 
-
-<hr>
+![EasyPay](https://github.com/thaisminas/api-easy-pay/blob/master/docs/EasyPay.jpg)
 
 ## Swagger
 
