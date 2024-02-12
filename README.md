@@ -21,14 +21,14 @@ A Api Easy Pay é uma aplicação desenvolvida para facilitar e agilizar transfe
 
 ## Principais Recursos
 
-* Enviar transferencias entre usuários
+* Enviar transferências entre usuários
 * Obter saldo da carteira
 * Obter relatório de extrato das transações efetuadas
 
 <hr>
 
 ## Tecnologias
-* Lingugem PHP
+* Linguagem PHP
 * Framework Symfony
 * MySql 
 * PHPUnit
