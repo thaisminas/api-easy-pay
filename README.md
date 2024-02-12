@@ -29,7 +29,7 @@ A Api Easy Pay é uma aplicação desenvolvida para facilitar e agilizar transfe
 
 ## Tecnologia
 * Lingugem PHP
-* Framework Symfont
+* Framework Symfony
 
 <hr>
 
