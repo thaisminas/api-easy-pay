@@ -4,10 +4,10 @@
 ## 📕 Índice
 
 - [Sobre](#sobre)
-- [Tecnologia](#tecnologias)
+- [Tecnologia](#tecnologia)
 - [Instalação](#instalação)
-- [Endpoints](#endpoints)
-- [Arquitetura](#endpoints)
+- [PHP MyAdmin](#php-myadmin)
+- [Arquitetura](#arquitetura)
 - [Swagger](#swagger)
 
 <hr>
@@ -33,32 +33,50 @@ A Api Easy Pay é uma aplicação desenvolvida para facilitar e agilizar transfe
 
 <hr>
 
-## Instalação local
+## Instalação
 
-clone o repositório
+Clone o repositório
 
 ```bash
-  git clone git@github.com:thaisminas/api-easy-pay.git
+  git clone https://github.com/thaisminas/api-easy-pay.git
 ```
 
-Rodando localmente
-
+Comando para rodar a aplicação através do docker compose 
 ```bash
-  composer install
+  docker-compose up -d --build  
 ```
 
 
-Rodando as migrações
+Execute as migrações
 
 ```bash
-  php bin/console doctrine:migrations:migrate
+  docker-compose exec app bin/console doctrine:migrations:migrate  
 ```
 
-Rodar os Seeds
+
+
+
+Comando para rodar os Seeds
 
 ```bash
-  php bin/console app:seed-customer
-  php bin/console app:seed-wallet
+  docker-compose exec app bin/console app:seed-customer
+  
+  docker-compose exec app bin/console app:seed-wallet
+```
+
+
+
+<hr>
+
+## PHP MyAdmin
+
+Para visualizar os dados do banco acesse a url:
+*http://localhost:8080*
+
+```bash
+  User: root
+  
+  Password: root
 ```
 
 
