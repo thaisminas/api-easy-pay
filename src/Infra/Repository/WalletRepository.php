@@ -10,7 +10,7 @@ use App\Infra\Repository\Mappers\WalletMapper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-class WalletDatabase extends ServiceEntityRepository implements WalletInterface
+class WalletRepository extends ServiceEntityRepository implements WalletInterface
 {
     private $walletFactory;
     public function __construct(ManagerRegistry $registry, WalletFactory $walletFactory)

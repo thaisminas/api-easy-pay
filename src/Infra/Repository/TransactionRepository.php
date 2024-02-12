@@ -10,7 +10,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use RuntimeException;
 
-class TransactionDatabase extends ServiceEntityRepository implements TransactionInterface
+class TransactionRepository extends ServiceEntityRepository implements TransactionInterface
 {
     private $transactionFactory;
     public function __construct(ManagerRegistry $registry, TransactionFactory $transactionFactory)

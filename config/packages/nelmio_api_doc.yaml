@@ -1,0 +1,9 @@
+nelmio_api_doc:
+    documentation:
+        info:
+            title: API Easy Pay
+            description: Application to carry out transfers between users!
+            version: 1.0.0
+    areas:
+        path_patterns:
+            - ^/api(?!/doc$)

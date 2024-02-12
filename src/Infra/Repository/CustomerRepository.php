@@ -10,7 +10,7 @@ use App\Infra\Repository\Mappers\CustomerMapper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-class CustomerDatabase extends ServiceEntityRepository implements CustomerInterface
+class CustomerRepository extends ServiceEntityRepository implements CustomerInterface
 {
     private $customerMapper;
     private $customerFactory;

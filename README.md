@@ -27,9 +27,11 @@ A Api Easy Pay é uma aplicação desenvolvida para facilitar e agilizar transfe
 
 <hr>
 
-## Tecnologia
+## Tecnologias
 * Lingugem PHP
 * Framework Symfony
+* MySql 
+* PHPUnit
 
 <hr>
 
@@ -91,6 +93,6 @@ Para visualizar os dados do banco acesse a url:
 ## Swagger
 
 Para visualizar a documentação do projeto no swagger acessar a rota:
-*http://localhost:8080/api/doc* 
+*http://localhost:8000/api/doc* 
 
 
