@@ -3,6 +3,7 @@
 namespace App\Application\UseCases;
 
 use App\Application\Factory\TransactionFactory;
+use App\Application\Helper\BalanceDataFormatter;
 use App\Application\Interfaces\CustomerInterface;
 use App\Application\Interfaces\ServiceAuthorizationInterface;
 use App\Application\Interfaces\TransactionInterface;
@@ -26,6 +27,7 @@ class CreateTransaction
     private $walletInterface;
     private $transactionFactory;
     private $notificationUseCase;
+    private $balanceDataFormatter;
 
     public function __construct(
         TransactionInterface          $transactionInterface,
@@ -33,7 +35,8 @@ class CreateTransaction
         ServiceAuthorizationInterface $serviceAuthorization,
         WalletInterface               $walletInterface,
         TransactionFactory   $transactionFactory,
-        SendNotification     $notificationUseCase
+        SendNotification     $notificationUseCase,
+        BalanceDataFormatter $balanceDataFormatter
     )
     {
         $this->transactionInterface = $transactionInterface;
@@ -42,6 +45,7 @@ class CreateTransaction
         $this->walletInterface = $walletInterface;
         $this->transactionFactory = $transactionFactory;
         $this->notificationUseCase = $notificationUseCase;
+        $this->balanceDataFormatter = $balanceDataFormatter;
     }
 
     public function execute(Array $data): void
@@ -59,7 +63,7 @@ class CreateTransaction
             $this->notificationUseCase->execute();
         } catch (Exception $err){
             $this->updateBalances($wallets, $transaction, 1);
-            throw new Exception('An error occurred while trying to process the transaction');
+            throw new Exception($err->getMessage(), $err->getCode());
         }
     }
 
@@ -96,7 +100,7 @@ class CreateTransaction
         $wallets[$payeerId]->setAccountBalance(round(($balancePayeer + $amountModifier * $amount), 2));
         $wallets[$payeeId]->setAccountBalance(round(($balancePayee - $amountModifier * $amount), 2));
 
-        $balanceData = balanceDataFormatter($wallets, $transaction);
+        $balanceData = $this->balanceDataFormatter->format($wallets, $transaction);
 
         $this->walletInterface->updateAccountBalanceByCustomerId($balanceData);
     }

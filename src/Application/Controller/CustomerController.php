@@ -56,8 +56,7 @@ class CustomerController extends AbstractController
         }  catch (UniqueConstraintViolationException $e) {
             return new JsonResponse(['error' => 'Violation: Name and email must be unique in the database - ' . $e->getMessage()], Response::HTTP_CONFLICT);
         } catch (\Exception $e) {
-            $code = $e->getCode() ? $e->getCode() : Response::HTTP_INTERNAL_SERVER_ERROR;
-            return new JsonResponse(['error' => $e->getMessage()], $code);
+            return new JsonResponse(['error' => $e->getMessage()], $e->getCode() ?? Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

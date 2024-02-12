@@ -33,7 +33,7 @@ class SendNotification
         }
 
         if (!$notificationSent) {
-            throw new NotificationException('Failed to send notification after 3 retries.');
+            throw new NotificationException('Failed to send notification after 3 retries.', 400);
         }
     }
 }

@@ -82,8 +82,7 @@ class TransactionController extends AbstractController
             ], Response::HTTP_CREATED);
 
         } catch (\Exception $e) {
-            $code = $e->getCode() ? $e->getCode() : Response::HTTP_INTERNAL_SERVER_ERROR;
-            return new JsonResponse(['error' => $e->getMessage()], $code);
+            return new JsonResponse(['error' => $e->getMessage()], $e->getCode() ?? Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
